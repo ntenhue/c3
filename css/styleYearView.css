@@ -1,0 +1,100 @@
+body {
+  font: 11px Tahoma;
+  font-family: Helvetica, Arial, Verdana;
+  shape-rendering: crispEdges;
+}
+
+.monthLabel {
+fill:black;
+}
+.monthLabelMouse {
+fill:#559393;
+}
+.label {
+fill:#aaaaaa;
+font: 8px Tahoma;
+}
+
+.day {
+  fill: #fff;
+  stroke: #ccc;
+}
+.month {
+  fill: none;
+  stroke: #444444;
+  stroke-width: 1px;
+}
+.legend {
+	padding: 0px;
+	font: 10px Tahoma;
+            }
+.title {
+	font: 20px sans-serif;
+            }            
+.canvas{
+	margin:0px;
+}     
+#container
+{
+	width: 1300px;
+	margin: 10px auto;
+	background-color: #fff;
+	color: #333;
+	border: 1px solid gray;
+}
+#top{
+	padding: .1em;
+	background-color: #ddd;
+	border-bottom: 1px solid gray;
+}
+#leftnav
+{
+	width:180px;
+	height:500px;
+	float:left;
+	margin: 0;
+	padding: 1em;
+}
+#leftnav h1{
+	font: 20px Tahoma;
+	font-family: Helvetica, Arial, Verdana;
+	color: #888888;
+}
+#leftnav h3{
+	font: 11px Tahoma;
+	font-family: Helvetica, Arial, Verdana;
+	color: #333333;
+}
+#rightnav
+{
+	float: right;
+	width: 100px;
+	margin-right: 20px;
+	padding: 1em;
+}
+#footer
+{
+clear: both;
+margin: 0;
+padding: .5em;
+color: #333;
+background-color: #ddd;
+border-top: 1px solid gray;
+}
+
+#leftnav p, .legend p { margin: 0 0 1em 0; }
+.canvas h2 { margin: 0 0 .5em 0; }
+
+
+.RdYlGn .q0-11{fill:rgb(255,255,220)}
+.RdYlGn .q1-11{fill:rgb(255,255,204)}
+.RdYlGn .q2-11{fill:rgb(255,237,160)}
+.RdYlGn .q3-11{fill:rgb(254,217,118)}
+.RdYlGn .q4-11{fill:rgb(254,178,76)}
+.RdYlGn .q5-11{fill:rgb(253,141,60)}
+.RdYlGn .q6-11{fill:rgb(252,78,42)}
+.RdYlGn .q7-11{fill:rgb(227,26,28)}
+.RdYlGn .q8-11{fill:rgb(177,0,38)}
+.RdYlGn .q9-11{fill:rgb(137,0,27)}
+.RdYlGn .q10-11{fill:rgb(73,0,12)}
+
