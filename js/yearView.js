@@ -26,27 +26,29 @@ function yearView(k, selected,monthColors, callback) {
 		.style("text-anchor", "middle")
 		.text(function(d) {return d;});
 
+
 	var dateLabel = svg.selectAll(".label")
-		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-		.enter().append("text") 
-		.attr("class", "label") 
-		.attr("x", function(d) {
-			if (day(d) == 0) {
-				return (week(d) - 1) * cellSize;
-			} else if (day(d) > 0) {
-				return week(d) * cellSize;
-			}
-		}) 
-		.attr("y", function(d) {
-			if (day(d) == 0) {
-				return 6 * cellSize;
-			} else if (day(d) > 0) {
-				return (day(d) - 1) * cellSize;
-			}
-		}) 
-		.attr("transform", "translate(9,12)")
-		.style("text-anchor", "middle")
-		.text( function(d) { return d3.time.format("%d")(d); }); 
+	.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+	.enter().append("text") 
+	.attr("class", "label") 
+	.attr("x", function(d) {
+		if (day(d) == 0) {
+			return (week(d) - 1) * cellSize;
+		} else if (day(d) > 0) {
+			return week(d) * cellSize;
+		}
+	}) 
+	.attr("y", function(d) {
+		if (day(d) == 0) {
+			return 6 * cellSize;
+		} else if (day(d) > 0) {
+			return (day(d) - 1) * cellSize;
+		}
+	}) 
+	.attr("transform", "translate(9,12)")
+	.style("text-anchor", "middle")
+	.text( function(d) { return d3.time.format("%d")(d); }); 
+	
 
 	var rect = svg.selectAll(".day")
 		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -54,7 +56,7 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("class", "day")
 		.attr("width", cellSize)
 		.attr("height", cellSize)
-		.attr("style:opacity","0.5")
+		.attr("style:opacity","0.8")
 		.attr("x", function(d) {
 					if (day(d) == 0) {
 						return (week(d) - 1) * cellSize;
@@ -72,6 +74,12 @@ function yearView(k, selected,monthColors, callback) {
 		.datum(format);
 	
 
+	
+	
+	
+
+	
+	
 	
 	$('.label').mouseover(function(){
 		
@@ -147,17 +155,18 @@ function yearView(k, selected,monthColors, callback) {
 		.rollup(function(d) { return d[0].hours; }) 
 		.map(calendarModel.totalBusyHours); 
 		
+	
+		dateLabel.filter(function(d){ return d in data; })
+			.append("svg:title")
+			.text(function(d){ return "you are" + data[d] + "hours busy"; })
+		
 		rect.filter(function(d) { return d in data;}) 
 			.attr("class", function(d) { return "day " + color(data[d]);})
 			.attr("busyHours",function(d){ return data[d]; })
 			.attr("date",function(d){ return d; } )
 			.append("svg:title")
 			.text(function(d){ return "On " + d + " you have totally " + data[d] + " hours of events" });
-			
-		dateLabel.filter(function(d){ return d in data; })
-			.append("svg:title")
-			.text(function(d){ return "you are" + data[d] + "hours busy"; })
-		
+
 
 	function monthPath(t0) { 
 		
