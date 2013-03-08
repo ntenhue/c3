@@ -28,14 +28,14 @@ function AskGoogle(calendarModel) {
 			if(resp.updated == calendarModel.calendars[k].updated
 			&& calendarModel.calendars[k].events != null) {
 				console.log(calendarModel.calendars[k].summary, "already up-to-date")
-				appModel.setCldrStatus(k,"updated");
+				appModel.setCldrStatus(k,"");
 			}else{
 				console.log(calendarModel.calendars[k].summary, "updates found"); 
 				
-				appModel.setCldrStatus(k,"<br>clearing events...");
+				appModel.setCldrStatus(k,"clr...");
 				calendarModel.clearEvents(k);
 				
-				appModel.setCldrStatus(k,"<br>loading events...");
+				appModel.setCldrStatus(k,"load...");
 				askGoogle.loadEvents(k,null);
 				
 				

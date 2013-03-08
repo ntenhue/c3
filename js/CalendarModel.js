@@ -6,7 +6,7 @@
 function CalendarModel(){
 	this.calendars= [];
 	this.totalBusyHours = []; 
-
+this.colors = [];
 
 	
 this.addCalendars = function (items) {	
@@ -18,6 +18,8 @@ this.addCalendars = function (items) {
 	this.calendars = this.calendars.concat(items);
 	
 	for (var i in this.calendars){	appModel.setCldrStatus(i,"");}
+	
+	for (var i in this.calendars){	this.colors[i] = this.calendars[i].backgroundColor;	}
 	this.notifyObservers("calendars",null);	
 	}
 
@@ -36,7 +38,7 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 		// if this is a last or the only page of events
 		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k].events);
 		//this.totalBusyHours = this.updateTotalBusyHours(this.calendars);
-		appModel.setCldrStatus(k,"loaded");
+		appModel.setCldrStatus(k,"");
 		this.notifyObservers("events loaded",k);
 		}
 	}	
@@ -46,6 +48,7 @@ this.clearCalendars = function () {
 	this.calendars=[];
 	this.totalBusyHours = []; 
 	appModel.cldrsMeta = [];
+	this.colors = [];
 	this.notifyObservers("calendars");	
 	}	
 

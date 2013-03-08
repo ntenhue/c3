@@ -30,7 +30,7 @@ function AppGeneralController(appModel) {
             	viewController = new ViewController(view, calendarModel);
             }, 2000);
             
-            yearView(null, appModel.selectedCldrs, function(){}); 
+            yearView(null, appModel.selectedCldrs, calendarModel.colors, function(){}); 
             legendView();
 
             }

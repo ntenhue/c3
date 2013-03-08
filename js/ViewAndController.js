@@ -21,7 +21,8 @@ function View(parent, calendarModel) {
 	this.colorMonthSpan = $("<span>");
 	this.colorMonthSpan.html(appModel.colorMonth);
 
-	$("#settings").append( this.colorCalsButton, this.colorEventsButton, "Color bars: ", this.colorMonthSpan);
+	
+	//$("#settings").append( this.colorCalsButton, this.colorEventsButton, "Color bars: ", this.colorMonthSpan);
 	$("#settings").hide();
 	
 	/***************************************************************************
@@ -119,7 +120,7 @@ function View(parent, calendarModel) {
 				if (see > 1) k=null;
 				
 			appModel.setWorkingStatus("updating year view...");
-			yearView(k, appModel.selectedCldrs, function(){appModel.setWorkingStatus("");});	
+			yearView(k, appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
 			}
 		}
 		
@@ -144,6 +145,7 @@ function View(parent, calendarModel) {
 				appModel.setWorkingStatus("updating month view...");
 				monthView = new MonthView (k, appModel.selectedCldrs,appModel.selectedYear,
 											  appModel.selectedMonth, 
+											  calendarModel.colors,
 											  function(){appModel.setWorkingStatus("");	});
 				}else{ 
 				$("#monthViewCanvas").empty();
@@ -191,7 +193,9 @@ function ViewController(view, calendarModel) {
 		var see = 0;
 		var k;
 
-		for ( var i in view.cldrList) {if (appModel.selectedCldrs[i]) {	
+		for ( var i in view.cldrList) {if (appModel.selectedCldrs[i] && appModel.cldrStatus[i]=='') {	
+			
+			
 			askGoogle.checkUpdatesAndLoad(i);
 			see++;
 			}}

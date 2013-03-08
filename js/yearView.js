@@ -1,4 +1,4 @@
-function yearView(k, selected, callback) {
+function yearView(k, selected,monthColors, callback) {
 	$("#yearViewCanvas").empty();
 	var width = 960, height = 186, cellSize = 17; // cell size
 	var day = d3.time.format("%w"), // %w weekday as a decimal number
@@ -135,6 +135,7 @@ function yearView(k, selected, callback) {
 				monthView = new MonthView(k, selected,
 						+this.attributes.yearNumber.value,
 						+this.attributes.monthNumber.value,
+						monthColors,
 						function(){});
 				$(this).css("fill", "#559393");
 			});
