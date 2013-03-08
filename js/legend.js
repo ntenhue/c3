@@ -1,8 +1,8 @@
 function legendView(){
 	$("#mylegend").empty();
     //Width and height
-    var w = 100;
-    var h = 290;
+    var w = 180;
+    var h = 30;
     var padding = 50;
  
     var dataset = [
@@ -17,21 +17,20 @@ function legendView(){
         ["q8-11"],
         ["q9-11"],
         ["q10-11"],
-        /*["q11-11"],
-        ["q12-11"],*/
+
     ];
 
-    var color_hash = {  0 : ["0-1 hours busy", "rgb(255,255,220)"],
-		    			1 : ["1-2", "rgb(255,255,204)"],
-		    			2 : ["2-3", "rgb(255,237,160)"],
-		    			3 : ["3-4", "rgb(254,217,118)"],
-		    			4 : ["4-5", "rgb(254,178,76)"],
-		    			5 : ["5-6", "rgb(253,141,60)"],
-		    			6 : ["6-7", "rgb(252,78,42)"],
-		    			7 : ["7-8", "rgb(227,26,28)"],
-		    			8 : ["8-9", "rgb(177,0,38)"],
-		    			9 : ["9-10", "rgb(137,0,27)"],
-		    			10: ["10+",   "rgb(73,0,12)"],
+    var color_hash = {  0 : ["0 hours", "rgb(255,255,220)"],
+		    			1 : ["", "rgb(255,255,204)"],
+		    			2 : ["", "rgb(255,237,160)"],
+		    			3 : ["", "rgb(254,217,118)"],
+		    			4 : ["", "rgb(254,178,76)"],
+		    			5 : ["", "rgb(253,141,60)"],
+		    			6 : ["", "rgb(252,78,42)"],
+		    			7 : ["", "rgb(227,26,28)"],
+		    			8 : ["10+ hours", "rgb(177,0,38)"],
+		    			9 : ["", "rgb(137,0,27)"],
+		    			10: ["",   "rgb(73,0,12)"],
 		    			/*11: ["q11-11", "rgb(35,0,6)"],
 		    			12: ["q12-11", "rgb(16,0,4)"]*/
 		  }                     
@@ -54,27 +53,27 @@ function legendView(){
 	// add legend   
 	var legend = svg.append("g")
 	  .attr("class", "legend")
-	  .attr("x", w - 100)
+	  .attr("x", w - 180)
 	  .attr("y", 25)
 	  .attr("height", 100)
-	  .attr("width", 100);
+	  .attr("width", 180);
 	  
 	legend.selectAll('g').data(dataset)
-      .enter()
-      .append('g')
-      .each(function(d, i) {
-        var g = d3.select(this);
-        g.append("rect")
-          .attr("x", w - 100)
-          .attr("y", i*15 +20)
-          .attr("width", 10)
-          .attr("height", 10)
-          .style("fill", color_hash[String(i)][1])
-          .style("stroke", "#CCCCCC");
+  .enter()
+  .append('g')
+  .each(function(d, i) {
+    var g = d3.select(this);
+    g.append("rect")
+      .attr("y", w - 180)
+      .attr("x", i*16)
+      .attr("width", 16)
+      .attr("height", 16)
+      .style("fill", color_hash[String(i)][1])
+      .style("stroke", "#CCCCCC");
         
         g.append("text")
-          .attr("x", w - 85)
-          .attr("y", i * 15 + 29)
+          .attr("y", w - 150)
+          .attr("x", i * 16)
           .attr("height",30)
           .attr("width",100)
           .style("fill", "grey")

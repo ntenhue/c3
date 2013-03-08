@@ -1,6 +1,6 @@
 function yearView(k, selected,monthColors, callback) {
 	$("#yearViewCanvas").empty();
-	var width = 960, height = 186, cellSize = 17; // cell size
+	var width = 960, height = 156, cellSize = 17; // cell size
 	var day = d3.time.format("%w"), // %w weekday as a decimal number
 	// [0(Sunday),6].
 	week = d3.time.format("%U"), // %U week number of the year (Sunday as the
@@ -109,13 +109,13 @@ function yearView(k, selected,monthColors, callback) {
 	var monthLabel = svg.selectAll(".monthLabel").data(function(d) {
 		return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1));
 	}).enter().append("text").attr("class", "monthLabel").style("text-anchor",
-			"middle").attr("x", monthLabelPositionX).attr("y", -15).attr(
+			"middle").attr("x", monthLabelPositionX).attr("y", -5).attr(
 			"yearNumber", function(d) {
 				return d3.time.format("%Y")(d);
 			}).attr("monthNumber", function(d) {
 		return d3.time.format("%m")(d);
 	}).text(function(d) {
-		return d3.time.format("%B")(d)
+		return d3.time.format("%b")(d)
 	});
 	$(".monthLabel").mouseover(function() {
 		$(this).css("cursor", "pointer");
