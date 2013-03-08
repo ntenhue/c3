@@ -4,6 +4,15 @@ body {
   shape-rendering: crispEdges;
 }
 
+
+p {
+  font: 14px Helvetica;
+  font-family: Helvetica, Verdana, Arial,;
+  shape-rendering: crispEdges;
+}
+
+
+
 .monthLabel {
 fill:black;
 }

@@ -66,7 +66,7 @@ function legendView(){
         var g = d3.select(this);
         g.append("rect")
           .attr("x", w - 100)
-          .attr("y", i*15 +20)
+          .attr("y", i*10 +20)
           .attr("width", 10)
           .attr("height", 10)
           .style("fill", color_hash[String(i)][1])
@@ -74,7 +74,7 @@ function legendView(){
         
         g.append("text")
           .attr("x", w - 85)
-          .attr("y", i * 15 + 29)
+          .attr("y", i * 10 + 29)
           .attr("height",30)
           .attr("width",100)
           .style("fill", "grey")

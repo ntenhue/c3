@@ -115,7 +115,7 @@ function yearView(k, selected,monthColors, callback) {
 			}).attr("monthNumber", function(d) {
 		return d3.time.format("%m")(d);
 	}).text(function(d) {
-		return d3.time.format("%B")(d)
+		return d3.time.format("%b")(d)
 	});
 	$(".monthLabel").mouseover(function() {
 		$(this).css("cursor", "pointer");
