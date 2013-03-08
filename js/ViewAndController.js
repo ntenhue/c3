@@ -48,8 +48,8 @@ function View(parent, calendarModel) {
 				this.checked = true;
 				this.div = $('<div>');
 				this.square = $('<div class="cldrListSquare">');
-				this.label = $('<span>');
-				this.status = $('<span style="color:#CCCCCC">');
+				this.label = $('<span class="cldrListCaption">');
+				this.status = $('<span style="color:#CCCCCC" class="cldrListCaption">');
 			}
 			
 			for ( var i in calendars) {
@@ -64,13 +64,13 @@ function View(parent, calendarModel) {
 				
 				item.div.append(" ");
 				
-				item.label = $('<span>')
+				item.label = $('<span class="cldrListCaption">')
 							.html(calendars[i].summary)
 							.appendTo(item.div);
 				
 				item.div.append(" ");
 				
-				item.status = $('<span style="color:#CCCCCC">')
+				item.status = $('<span style="color:#CCCCCC" class="cldrListCaption">')
 							.html(appModel.getCldrStatus(i))
 							.appendTo(item.div);
 				

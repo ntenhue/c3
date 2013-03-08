@@ -1,6 +1,10 @@
 .cldrListSquare	{ 
 	background-color: #FFFFFF; 
 	border: 1px solid #CCCCCC; 
-	width: 11px; height: 11px; 
+	width: 15px; height: 15px; 
 	display: inline-block;
+						}
+
+.cldrListCaption{ 
+	margin-bottom:2px;
 						}
