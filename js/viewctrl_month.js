@@ -185,4 +185,27 @@ function MonthView(k, selected, yearNumber, monthNumber, monthColors, callback){
 
 		  
 	callback();
+	
+	
+	
+
+}
+
+
+function monthViewUpdate(){
+	var see = 0;
+	var k;
+	for ( var i in appModel.selectedCldrs) {	if (appModel.selectedCldrs[i]) {	see++; k = i;	}	}
+
+	if (see != 0 && appModel.selectedMonth!=null) {	
+		if(see>1)k=null;
+		appModel.setWorkingStatus("updating month view...");
+		monthView = new MonthView (k, appModel.selectedCldrs,appModel.selectedYear,
+									  appModel.selectedMonth, 
+									  calendarModel.colors,
+									  function(){appModel.setWorkingStatus("");	});
+		}else{ 
+		$("#monthViewCanvas").empty();
+		}
+	
 }

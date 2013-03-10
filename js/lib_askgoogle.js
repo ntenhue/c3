@@ -8,6 +8,7 @@ function AskGoogle(calendarModel) {
 			
 			calendarModel.clearCalendars();
 			calendarModel.addCalendars(resp.items);
+			appModel.setCalendarsLoaded(true);
 			});
 		}
 	

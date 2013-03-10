@@ -2,60 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Yearly View</title>
+    <title>c3 The Full Pucture</title>
 
 	<script src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript" src="js/jquery-1.9.0.js"></script>
     <script src="https://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
 
-        <link rel='stylesheet' href='css/styleSidebar.css'>            
-    <link rel='stylesheet' href='css/styleYearView.css'>
-        <link rel='stylesheet' href='css/styleMonthView.css'>
+    <link rel='stylesheet' href='css/style_app.css'>            
+    <link rel='stylesheet' href='css/style_month.css'>
+    <link rel='stylesheet' href='css/style_year.css'>
 
-    <script type='text/javascript' src='js/AppModel.js'></script>   	
-    <script type='text/javascript' src='js/AppGeneralController.js'></script>	
-    <script type="text/javascript" src="js/authentification.js"></script>
-    <script type="text/javascript" src="js/AskGoogle.js"></script>    	
-    <script type="text/javascript" src="js/CalendarModel.js"></script>
-    <script type="text/javascript" src="js/ViewAndController.js"></script>
-	<script type='text/javascript' src='js/legend.js'></script>
-	<script type='text/javascript' src='js/yearView.js'></script>
-	<script type='text/javascript' src='js/monthView.js'></script>
-    
-	<!---initialisation of the model and controller--->
+    <script type="text/javascript" src="js/lib_auth.js"></script>
+    <script type="text/javascript" src="js/lib_askgoogle.js"></script>  
+    <script type='text/javascript' src='js/model_app.js'></script>   	
+    <script type="text/javascript" src="js/model_calendar.js"></script>
+    <script type='text/javascript' src='js/viewctrl_app.js'></script>   
+    <script type="text/javascript" src="js/viewctrl_list.js"></script>
+   	<script type='text/javascript' src='js/viewctrl_legend.js'></script>
+    <script type='text/javascript' src='js/viewctrl_month.js'></script>	
+	<script type='text/javascript' src='js/viewctrl_year.js'></script>
+
     <script type="text/javascript" >
         $(document).ready(function() {
+            //initialisation of app model and controller
             appModel = new AppModel();
-            appGeneralController = new AppGeneralController(appModel);
+            appView  = new AppView($("#container"),appModel); 
+            appCtrl  = new AppCtrl(appModel, appView); 
             });
     </script>
 </head>
 
 <body>
-	
 	<div id="container">
 		<div class="top">
 			<span id="title">C3 the Full Picture <sup>β</sup></span>
-			<span id="login" align="right"><button id='authorize-button'>Sign in with google</button><a href="https://www.google.com/accounts/Logout">Sign out</a></span>
+			<span id="login" >
+			    <button id='authorize-button'>Sign in with google</button>
+			    <a href="https://www.google.com/accounts/Logout">Sign out</a>
+			</span>
 		</div>		
 		<div id="leftnav">
-
 			<p>C3 adds a yearly view to your Google Calendar. Colors range from light to dark, depending on how busy you are.</p>
-		    <div id="mylegend" class="legend"> </div>
+		    <div id="legendhere" class="legend"> </div>
 		    <p>Select calendars by clicking boxes:</p> 
-		    <div id="workspace"> </div> 
-
-
+		    <div id="listhere"> </div> 
 		</div>	
 		<div id="center">
 		  	<span id="yearViewCanvas" class="canvas" > </span>			
 			<span id="monthViewCanvas" class="canvas" > </span>
-			<span id="settings" class="canvas" > </span>
+		</div>	
+		<div id="footer"> 	
+		    <a href="about.htm" target="_blank">About</a>    
 		</div>
-			
-			
-			
-			<div id="footer"> 	<a href="about.htm" target="_blank">About</a>    </div>
 	</div>
 </body>
 </html>

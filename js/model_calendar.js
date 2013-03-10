@@ -3,7 +3,7 @@
 	    CalendarModel    
 	*****************************************/
 
-function CalendarModel(){
+function CalendarModel(appModel){
 	this.calendars= [];
 	this.totalBusyHours = []; 
 this.colors = [];
@@ -17,11 +17,13 @@ this.addCalendars = function (items) {
 		}
 	this.calendars = this.calendars.concat(items);
 	
-	for (var i in this.calendars){	appModel.setCldrStatus(i,"");}
+	for (var i in this.calendars){	appModel.setCldrStatus(i,""); appModel.SetSelectedCldrs(i,false);}
 	
 	for (var i in this.calendars){	this.colors[i] = this.calendars[i].backgroundColor;	}
 	this.notifyObservers("calendars",null);	
 	}
+
+
 
 this.addEvents = function (k, items, upd, nextPageToken) {	
 	this.calendars[k].updated= upd;
