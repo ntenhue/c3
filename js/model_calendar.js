@@ -8,6 +8,19 @@ function CalendarModel(appModel){
 	this.totalBusyHours = []; 
 this.colors = [];
 
+
+
+this.sortCalendars = function(calendars){
+	var result=[];
+	for (var i in calendars){if(calendars[i].primary)result.push(calendars[i]);  }
+	for (var i in calendars){if(calendars[i].accessRole=="owner" && !calendars[i].primary)result.push(calendars[i]);}
+	for (var i in calendars){if(calendars[i].accessRole=="writer")result.push(calendars[i]);}
+	for (var i in calendars){if(calendars[i].accessRole=="reader")result.push(calendars[i]);}
+	for (var i in calendars){if(calendars[i].accessRole=="freeBusyReader")result.push(calendars[i]);}	
+	for (var i in calendars){if(calendars[i].accessRole=="")result.push(calendars[i]);}	
+	for (var i in calendars){if(calendars[i].accessRole==null)result.push(calendars[i]);}	
+	return result;
+}
 	
 this.addCalendars = function (items) {	
 	for (var i in items){
@@ -16,11 +29,13 @@ this.addCalendars = function (items) {
 		items.busyHours = [];
 		}
 	this.calendars = this.calendars.concat(items);
-	
-	for (var i in this.calendars){	appModel.setCldrStatus(i,""); appModel.SetSelectedCldrs(i,false);}
+	this.calendars = this.sortCalendars(this.calendars);
 	
 	for (var i in this.calendars){	this.colors[i] = this.calendars[i].backgroundColor;	}
-	this.notifyObservers("calendars",null);	
+	for (var i in this.calendars){	appModel.setCldrStatus(i,"initiated"); appModel.SetSelectedCldrs(i,false);}
+	
+	appModel.setCalendarsLoaded(true);
+	//this.notifyObservers("calendars",null);	
 	}
 
 
@@ -29,19 +44,21 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 	this.calendars[k].updated= upd;
 	this.calendars[k].events = this.calendars[k].events.concat(items);
 
-	this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
-	this.calendars[k].events = this.updateEventColor(this.calendars[k].events);
+	var last = items[items.length-1].start;
+	if (last.date == null)last.date = last.dateTime.substring(0,10);
+	appModel.setCldrStatus(k,"<br>loading events... "+last.date);
 	
-	appModel.setCldrStatus(k,"<br>loading events... "+this.calendars[k].events[this.calendars[k].events.length-1].start.date);
-	
-
 	
 	if (nextPageToken==null){
+		this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
+		this.calendars[k].events = this.updateEventColor(this.calendars[k].events);
+		
 		// if this is a last or the only page of events
 		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k].events);
 		//this.totalBusyHours = this.updateTotalBusyHours(this.calendars);
-		appModel.setCldrStatus(k,"");
-		this.notifyObservers("events loaded",k);
+		
+		appModel.setCldrStatus(k,"events added");	
+		//this.notifyObservers("events added",k);
 		}
 	}	
 
@@ -51,7 +68,8 @@ this.clearCalendars = function () {
 	this.totalBusyHours = []; 
 	appModel.cldrsMeta = [];
 	this.colors = [];
-	this.notifyObservers("calendars");	
+	appModel.setCalendarsLoaded(false);
+	//this.notifyObservers("calendars");	
 	}	
 
 this.clearEvents = function (k) {	
@@ -60,7 +78,7 @@ this.clearEvents = function (k) {
 	this.calendars[k].busyHours = [];
 	//this.totalBusyHours = this.updateTotalBusyHours(this.calendars);
 	appModel.setCldrStatus(k,"events cleared");
-	this.notifyObservers("events cleared",k);	
+	//this.notifyObservers("events cleared",k);	
 	}	
 
 this.getCalendars = function () { return this.calendars;	        }

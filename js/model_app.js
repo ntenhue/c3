@@ -38,6 +38,7 @@ function AppModel() {
 			this.cldrStatus[index] = value;
 		}
 		this.notifyObservers("cldrStatus");
+		this.notifyObservers(value);
 	}
 	this.SetSelectedCldrs = function(index, value) {
 		if (index == null) {
