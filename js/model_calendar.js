@@ -300,14 +300,13 @@ this.updateBusyHours = function (events) {
 
 this._observers = [];
 
-this.addObserver = function(observer) 
-{
+this.addObserver = function(observer) {
 	this._observers.push(observer);
 }
 
 this.notifyObservers = function(what,k) 
 {
-	for(var i=0; i<this._observers.length; i++) 
+	for(var i in this._observers) 
 	{
 		this._observers[i].update(what,k);
 	}	

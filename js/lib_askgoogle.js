@@ -78,6 +78,11 @@ function AskGoogle(calendarModel) {
 		}// function loadEvents
 	
 	
+	
+	
+	
+	
+	
 }//function AskGoogle
 
 

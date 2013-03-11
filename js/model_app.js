@@ -13,6 +13,8 @@ function AppModel() {
 
 	this.cldrStatus = [];
 	this.workingStatus;
+	
+	this.colorMonth="byCalendars";
 
 	/***************************************************************************
 	 * SETTERS
@@ -80,9 +82,9 @@ function AppModel() {
 		this._observers.push(observer);
 	}
 
-	this.notifyObservers = function(arg) {
-		for ( var i = 0; i < this._observers.length; i++) {
-			this._observers[i].update(arg);
+	this.notifyObservers = function(what) {
+		for ( var i in this._observers) {
+			this._observers[i].update(what);
 		}
 	}
 

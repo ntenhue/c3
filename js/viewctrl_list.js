@@ -96,8 +96,8 @@ for ( var i in calendarModel.calendars) {
 			}
 
 		setTimeout(	function() {
-		for ( var i in listView.cldrList) {
-			if (listView.cldrList[i].checked 
+		for ( var i in appModel.selectedCldrs) {
+			if (appModel.selectedCldrs[i] 
 			&& !(appModel.getCldrStatus() == "updated" 
 			|| appModel.getCldrStatus() == "loaded"))see = 0;
 			}
