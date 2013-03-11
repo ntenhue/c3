@@ -36,12 +36,14 @@ function ListView(parent, calendarModel) {
 				item.div.append(" ");
 				item.status.html(appModel.getCldrStatus(i)).appendTo(item.div);
 				item.div.append("<br>");
+				item.square.click(function() {listClick(listView, calendarModel, $(this).attr('id'));});	
 
 				this.cldrList[i] = item;
 				this.listCalendarsDiv.append(this.cldrList[i].div);
+					
 				}
 			
-			this.listCtrl= new ListCtrl(this,calendarModel);
+			
 
 			}
 
@@ -77,42 +79,35 @@ function ListView(parent, calendarModel) {
 
 
 
-function ListCtrl(listView, calendarModel) {
+function listClick(listView, calendarModel, index) {
+	
+	appModel.selectedCldrs[index] = !appModel.selectedCldrs[index];
 
-for ( var i in calendarModel.calendars) {
+	var see = 0;
 
-	listView.cldrList[i].square.click(function() {
-		
-		appModel.selectedCldrs[$(this).attr('id')] = !appModel.selectedCldrs[$(this).attr('id')];
-
-		var see = 0;
-		var k;
-
-		for ( var i in listView.cldrList) {
-			if (appModel.selectedCldrs[i]&& appModel.cldrStatus[i] == '') {
-				askGoogle.checkUpdatesAndLoad(i);
-				see++;
-				}
+	for ( var k in appModel.selectedCldrs) {
+		if (appModel.selectedCldrs[k]&& appModel.cldrStatus[k] == '') {
+			askGoogle.checkUpdatesAndLoad(k);
+			see++;
 			}
+		}
 
-		setTimeout(	function() {
-		for ( var i in appModel.selectedCldrs) {
-			if (appModel.selectedCldrs[i] 
-			&& !(appModel.getCldrStatus() == "updated" 
-			|| appModel.getCldrStatus() == "loaded"))see = 0;
-			}
-			}, 500);
+	setTimeout(	function() {k
+	for ( var k in appModel.selectedCldrs) {
+		if (appModel.selectedCldrs[k] 
+		&& !(appModel.getCldrStatus() == "updated" 
+		|| appModel.getCldrStatus() == "loaded"))see = 0;
+		}
+		}, 500);
 
-		if (see != 0) {
-			appModel.setWorkingStatus("calculating occupancy...");
-			calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars, appModel.selectedCldrs);
-			yearViewUpdate();
-			monthViewUpdate();
-			}
-		
-		listView.update("calendarsOnOff", null);
-		}); // click function
+	if (see != 0) {
+		appModel.setWorkingStatus("calculating occupancy...");
+		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars, appModel.selectedCldrs);
+		yearViewUpdate();
+		monthViewUpdate();
+		}
+	
+	listView.update("calendarsOnOff", null);
 
-	}// for calendars
 }
 	
