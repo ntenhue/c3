@@ -1,9 +1,32 @@
 body {
-  font: 11px Tahoma;
+  font: 10px sans-serif;
   font-family: Helvetica, Arial, Verdana;
   shape-rendering: crispEdges;
 }
 
+@font-face {
+    font-family: 'molotregular';
+    src: url('fonts/molot-webfont.eot');
+    src: url('fonts/molot-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/molot-webfont.woff') format('woff'),
+         url('fonts/molot-webfont.ttf') format('truetype'),
+         url('fonts/molot-webfont.svg#molotregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'bebas_neueregular';
+    src: url('fonts/bebasneue-webfont.eot');
+    src: url('fonts/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/bebasneue-webfont.woff') format('woff'),
+         url('fonts/bebasneue-webfont.ttf') format('truetype'),
+         url('fonts/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
 
 p {
   font: 14px Helvetica;
@@ -33,41 +56,69 @@ p {
 #container
 {
 	width: 1160px;
+	height: auto;
 	margin: auto;
 	margin-top: 10px;
-	background-color: #fff;
-	border: 1px solid gray;
+	background-color: #fefefe;
+	border: 1px solid #e5e5e5;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 .top{
 	z-index:1;
-	background-color: #EEE;
-	border-bottom: 1px solid gray;
+	background-color: #f1f1f1;
+	border-bottom: 1px solid #e5e5e5;
+	-webkit-border-radius: 5px 5px 0px 0px;
+	-moz-border-radius: 5px 5px 0px 0px;
+	border-radius: 5px 5px 0px 0px;
 	top:0;
-    height:30px;
+    height:auto;
     padding: 5px 5px 5px 5px;
 }
 #title{
-	font: 20px Tahoma;
-	font-family: Helvetica, Arial, Verdana;
+	font: 22px 'bebas_neueregular';
+	font-family: 'bebas_neueregular', Helvetica, Arial, Verdana;
 	color: #666;
-	text-shadow: 0px 1px 1px #888;
 	margin-left:5px;
+	letter-spacing: 2px;
+}
+#title sup{
+	margin-left:2px;
+	font-size: 12px;
+}
+#mainlogo {
+	font: 'molotregular';
+	font-family: 'molotregular', Helvetica, Arial, Verdana;
+	color: #888;
 }
 #login{
-	align:right;
 	float:right;
-	margin-right:20px;
 }
 
-#authorize-button {
-    background: #EEE;
+#authorize-button, #signout {
     border-radius: 3px;
-    border: solid 1px #999;
+    background: #eeeeee;
+	background: rgba(238, 238, 238, 1);
+	margin: 1px;
+	padding: 3px;
+  	border: 1px solid #c6c6c6;
+  	color: #666666;
+  	text-decoration: none;
+}
+
+#authorize-button:hover , #signout:hover {
+  color: #fda363;
+  background: #f7f7f7;
+  background: rgba(247, 247, 247, 1);
+  -webkit-box-shadow: inset 1px 1px 1px #444;
+  -moz-box-shadow: inset 1px 1px 1px #444;
+  box-shadow: inset 1px 1px 1px #444;
 }
 #leftnav
 {
 	width:180px;
-	height:600px;
+	height:auto;
 	float:left;
 	margin-top: 15px;
 	padding: 1em;
@@ -77,12 +128,28 @@ p {
 	font-family: Helvetica, Arial, Verdana;
 	color: #333333;
 }
+#center {
+	float: right;
+	width: 960px;
+}
 #footer
 {
+	background-color: #f1f1f1;
+	border-top: 1px solid #e5e5e5;
+	-webkit-border-radius: 0px 0px 5px 5px;
+	-moz-border-radius: 0px 0px 5px 5px;
+	border-radius: 0px 0px 5px 5px;
 	clear: both;
 	padding: 5px 5px 5px 5px;
+	margin-top: 20px;
 	color: #333;
-	background-color: #EEE;
-	border-top: 1px solid gray;
 	bottom:0;
 }
+#footer a {
+	color: #666666;
+	text-decoration: none;
+	margin-left: 3px;
+}
+#footer a:hover {
+  color: #fda363;
+ }

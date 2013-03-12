@@ -18,10 +18,16 @@ font: 8px Tahoma;
   stroke: #888888;
   stroke-width: 1px;
 }
-        
-.canvas{
+ 
+.canvasyear{
 	margin:0px 0px 0px 0px;
-	display: inline;
+	position:relative;
+}     
+       
+.canvasmonth{
+	margin:0px 0px 0px 0px;
+	display:block;
+	position:absolute;
 }     
 
 
