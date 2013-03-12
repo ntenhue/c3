@@ -19,15 +19,8 @@ font: 8px Tahoma;
   stroke-width: 1px;
 }
  
-.canvasyear{
-	margin:0px 0px 0px 0px;
-	position:relative;
-}     
-       
-.canvasmonth{
-	margin:0px 0px 0px 0px;
-	display:block;
-	position:absolute;
+.canvas{
+
 }     
 
 

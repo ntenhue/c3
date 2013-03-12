@@ -2,7 +2,7 @@ function yearView(k, selected,monthColors, callback) {
 	
 	$("#yearViewCanvas").empty();
 	
-	var width = 960, height = 186, cellSize = 17; 
+	var width = 960, height = 166, cellSize = 17; 
 	var day = d3.time.format("%w"), 
 	week = d3.time.format("%U"), 
 	format = d3.time.format("%Y-%m-%d");
