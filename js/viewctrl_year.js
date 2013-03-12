@@ -203,12 +203,11 @@ function yearViewUpdate() {
 	var see = 0;
 	var k;
 	for (var i in appModel.selectedCldrs) {	if (appModel.selectedCldrs[i]) {see++; k = i;}	}
+	if(see>1)k=null;
+	
+	appModel.setWorkingStatus("updating year view...");
+	yearView(k, appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
 
-	if (see != 0) {	
-		if (see > 1) k=null;
-		appModel.setWorkingStatus("updating year view...");
-		yearView(k, appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
-	}
 }
 
 

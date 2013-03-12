@@ -40,7 +40,7 @@ function AppModel() {
 		this.notifyObservers("cldrStatus");
 		this.notifyObservers(value);
 	}
-	this.SetSelectedCldrs = function(index, value) {
+	this.setSelectedCldrs = function(index, value) {
 		if (index == null) {
 			for ( var i in this.selectedCldrs)this.selectedCldrs[i] = value;
 		} else {

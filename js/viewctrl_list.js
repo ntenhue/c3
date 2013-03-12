@@ -2,7 +2,9 @@ function ListView(parent, calendarModel) {
 
 	this.cldrList = [];
 	this.listCalendarsDiv = $("<div>");
-	parent.append(this.listCalendarsDiv);
+	this.statusDiv = $('<div style="color:#CCCCCC">');
+
+	parent.append(this.listCalendarsDiv, this.statusDiv);
 
 	
 	this.item = function() {
@@ -17,7 +19,6 @@ function ListView(parent, calendarModel) {
 	 **************************************************************************/
 
 	// Register an observer to the model
-	//calendarModel.addObserver(this);
 	appModel.addObserver(this);
 
 	// This function gets called when there is a change in the model
@@ -34,7 +35,7 @@ function ListView(parent, calendarModel) {
 				item.div.append(" ");
 				item.label.html(calendars[i].summary).appendTo(item.div);
 				item.div.append(" ");
-				item.status.html(appModel.getCldrStatus(i)).appendTo(item.div);
+				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
 				item.square.click(function() {listClick(listView, calendarModel, $(this).attr('id'));});	
 
@@ -59,9 +60,17 @@ function ListView(parent, calendarModel) {
 			}
 
 		if (what == "cldrStatus") {
-			for ( var i in this.cldrList)this.cldrList[i].status.html(appModel.getCldrStatus(i));
+			for ( var i in this.cldrList)
+			if (appModel.cldrStatus[i].substring(0,4) == "load")	{
+				this.cldrList[i].status.html(appModel.getCldrStatus(i));
+			}else{
+				this.cldrList[i].status.html("");
+			}
 			}
 		
+		if (what == "workingStatus") {
+			this.statusDiv.html(appModel.workingStatus);
+			}
 
 
 		}
@@ -84,10 +93,7 @@ function listClick(listView, calendarModel, index) {
 	
 	
 	for ( var k in appModel.selectedCldrs) {
-		if (appModel.selectedCldrs[k]
-		    &&(appModel.cldrStatus[k] == 'events added'
-		    || appModel.cldrStatus[k] == 'initiated'
-		    || appModel.cldrStatus[k] == 'updated')) {
+		if (appModel.selectedCldrs[k] &&!(appModel.cldrStatus[k].substring(0,4) == "load")) {
 			askGoogle.checkUpdatesAndLoad(k);
 			}
 		}

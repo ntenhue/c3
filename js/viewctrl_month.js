@@ -39,6 +39,7 @@ function MonthView(k, selected, yearNumber, monthNumber, monthColors, callback){
 
 		if (k!=null) {	
 			var data = calendarModel.updateBusyHours(calendarModel.calendars[k].events);	
+			//var data = [].concat(calendarModel.calendars[k].busyHours);
 			var color = d3.scale.ordinal()
 		   .range([monthColors[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd",    "#00b050", "#c00000"]);
 		

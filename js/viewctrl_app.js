@@ -1,15 +1,12 @@
 function AppView(parent, appModel) {
 
-	this.workingSpan = $('<span style="color:#CCCCCC">');
-	parent.append(this.workingSpan);
+
 	
 	
 appModel.addObserver(this);
 	
 this.update = function(what) {
-	if (what == "workingStatus") {
-		this.workingSpan.html(appModel.getWorkingStatus());
-		}
+
 	
 	if (what == "calendars loaded") {	
 		yearView(null, appModel.selectedCldrs, calendarModel.colors,function() {});

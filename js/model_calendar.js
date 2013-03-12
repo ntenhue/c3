@@ -32,7 +32,7 @@ this.addCalendars = function (items) {
 	this.calendars = this.sortCalendars(this.calendars);
 	
 	for (var i in this.calendars){	this.colors[i] = this.calendars[i].backgroundColor;	}
-	for (var i in this.calendars){	appModel.setCldrStatus(i,"initiated"); appModel.SetSelectedCldrs(i,false);}
+	for (var i in this.calendars){	appModel.setCldrStatus(i,"initiated"); appModel.setSelectedCldrs(i,false);}
 	
 	appModel.setCalendarsLoaded(true);
 	//this.notifyObservers("calendars",null);	
@@ -206,18 +206,19 @@ this.updateTotalBusyHours = function (calendars, selected) {
 					
 					ttlbzyhrs[j].hours += calendars[k].busyHours[i].hours
 					
-					if (appModel.colorMonth=="byCalendars"){
+					//if (appModel.colorMonth=="byCalendars"){
 					
 						ttlbzyhrs[j].hoursByColor[k] += calendars[k].busyHours[i].hours;
-					}
+					//}
 					
+					/*
 					if (appModel.colorMonth=="byEvents"){
 						
 					
 						for (var l in ttlbzyhrs[j].hoursByColor){
 							ttlbzyhrs[j].hoursByColor[l] += calendars[k].busyHours[i].hoursByColor[l];
 						}
-					}
+					}*/
 					
 					pushNeeded = false;
 					break;
@@ -235,17 +236,18 @@ this.updateTotalBusyHours = function (calendars, selected) {
 				ttlbzyhrs[ttlbzyhrs.length-1].date = calendars[k].busyHours[i].date;
 				ttlbzyhrs[ttlbzyhrs.length-1].hours = calendars[k].busyHours[i].hours;
 				
-				if (appModel.colorMonth=="byCalendars"){
+				//if (appModel.colorMonth=="byCalendars"){
 					
 					ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[k] = calendars[k].busyHours[i].hours;
-				}
+				//}
 				
+				/*
 				if (appModel.colorMonth=="byEvents"){
 					
 					for (var l in ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor){
 					ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[l] = calendars[k].busyHours[i].hoursByColor[l];
 					}
-				}
+				}*/
 				
 				}
 			
