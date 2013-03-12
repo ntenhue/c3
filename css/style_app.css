@@ -1,6 +1,7 @@
 body {
-  font: 10px sans-serif;
-  font-family: Helvetica, Arial, Verdana;
+	font: 11px Tahoma;
+	font-family: Helvetica, Arial, Verdana;
+	color: #333333;
   shape-rendering: crispEdges;
 }
 
@@ -29,9 +30,10 @@ body {
 }
 
 p {
-  font: 14px Helvetica;
-  font-family: Helvetica, Verdana, Arial,;
+  font: 14px Verdana;
+  font-family: Verdana, Helvetica, Arial, sans-serif;
   shape-rendering: crispEdges;
+
 }
 
 .legend {
@@ -51,7 +53,15 @@ p {
 	margin-bottom:2px;
 						}
 						
+.important{
+	color: #BB0000;
+}
 
+h1{
+	font: 22px 'bebas_neueregular';
+	font-family: 'bebas_neueregular', Helvetica, Arial, Verdana;
+	letter-spacing: 2px;
+}
 
 #container
 {

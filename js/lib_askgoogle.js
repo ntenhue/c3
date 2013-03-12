@@ -46,7 +46,7 @@ function AskGoogle(calendarModel) {
 		
 	
 	
-	
+	// TODO: check this, optimize, remove magic number if possible
 	this.loadEvents = function(k, pageToken) {
 		this.request = gapi.client.calendar.events.list({
 			'calendarId': calendarModel.calendars[k].id, 

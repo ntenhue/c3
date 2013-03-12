@@ -37,6 +37,7 @@ function ListView(parent, calendarModel) {
 				item.div.append(" ");
 				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
+				// TODO: check parameter referencing in JS to callbacks
 				item.square.click(function() {listClick(listView, calendarModel, $(this).attr('id'));});	
 
 				this.cldrList[i] = item;
@@ -81,9 +82,11 @@ function ListView(parent, calendarModel) {
 
 function listClick(listView, calendarModel, index) {
 	
+	// XXX: optimize this. slow call, find the culprit
 	appModel.selectedCldrs[index] = !appModel.selectedCldrs[index];
 
 	listView.update("calendarsOnOff", null);
+	
 	
 	appModel.setWorkingStatus("calculating occupancy...");
 	calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);

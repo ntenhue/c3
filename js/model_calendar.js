@@ -10,6 +10,24 @@ this.colors = [];
 
 
 
+this.addCalendars = function (items) {	
+	for (var i in items){
+		items.events = [];
+		items.updated = "";
+		items.busyHours = [];
+		}
+	this.calendars = this.calendars.concat(items);
+	this.calendars = this.sortCalendars(this.calendars);
+	
+	for (var i in this.calendars){	this.colors[i] = this.calendars[i].backgroundColor;	}
+	for (var i in this.calendars){	appModel.setCldrStatus(i,"initiated"); appModel.setSelectedCldrs(i,false);}
+	
+	appModel.setCalendarsLoaded(true);
+	//this.notifyObservers("calendars",null);	
+	}
+
+
+//TODO: David says it is hhhhhhorible))
 this.sortCalendars = function(calendars){
 	var result=[];
 	for (var i in calendars){if(calendars[i].primary)result.push(calendars[i]);  }
@@ -22,21 +40,7 @@ this.sortCalendars = function(calendars){
 	return result;
 }
 	
-this.addCalendars = function (items) {	
-	for (var i in items){
-		items.events = [];
-		items.updated = [];
-		items.busyHours = [];
-		}
-	this.calendars = this.calendars.concat(items);
-	this.calendars = this.sortCalendars(this.calendars);
-	
-	for (var i in this.calendars){	this.colors[i] = this.calendars[i].backgroundColor;	}
-	for (var i in this.calendars){	appModel.setCldrStatus(i,"initiated"); appModel.setSelectedCldrs(i,false);}
-	
-	appModel.setCalendarsLoaded(true);
-	//this.notifyObservers("calendars",null);	
-	}
+
 
 
 
