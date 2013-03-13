@@ -90,6 +90,8 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("monthNumber", function(d) { return d3.time.format("%m")(d); })
 		.text(function(d) { return d3.time.format("%b")(d) });
 
+/* ---- functions ---- */
+
 		function monthLabelPositionX(t0) {
 			var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0), d0 = +day(t0), w0 = +week(t0), d1 = +day(t1), w1 = +week(t1);
 			if (d0 == 0) {
@@ -98,49 +100,43 @@ function yearView(k, selected,monthColors, callback) {
 				return (w0 + 1 + w1 + 1) / 2 * cellSize;
 			}
 		}
+		
+		function monthPath(t0) { 
+		
+			var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0), 
+			d0 = +day(t0), w0 = +week(t0), 
+			d1 = +day(t1), w1 = +week(t1); 
+			if (d0 == 0) {
+				return "M" + w0 * cellSize + "," + 6 * cellSize + "H" + (w0 - 1)
+						* cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize + "V"
+						+ d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0 + "H"
+						+ w0 * cellSize + "Z";
+			} else if (d0 > 0) {
+				return "M" + (w0 + 1) * cellSize + "," + (d0 - 1) * cellSize + "H"
+						+ w0 * cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize
+						+ "V" + d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0
+						+ "H" + (w0 + 1) * cellSize + "Z";
+			}
+		}
 	
-	/*------------------------*/
-	/* importing the data */
-	/*----------------------*/
+
+/* ---- Import the Data ---- */
 
 	var data = d3.nest() 
 		.key(function(d) { return d.date; }) 
 		.rollup(function(d) { return d[0].hours; }) 
 		.map(calendarModel.totalBusyHours); 
-		
-	
-		dateLabel.filter(function(d){ return d in data; })
-			.append("svg:title")
-			.text(function(d){ return "you are" + data[d] + "hours busy"; })
-		
+
 		rect.filter(function(d) { return d in data;}) 
 			.attr("class", function(d) { return "day " + color(data[d]);})
 			.attr("busyHours",function(d){ return data[d]; })
 			.attr("date",function(d){ return d; } )
 			.append("svg:title")
-			.text(function(d){ return "On " + d + " you have totally " + data[d] + " hours of events" });
+			.text(function(d){ return data[d] + " hours of events here." });
 
 
-	function monthPath(t0) { 
-		
-		var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0), 
-		d0 = +day(t0), w0 = +week(t0), 
-		d1 = +day(t1), w1 = +week(t1); 
-		if (d0 == 0) {
-			return "M" + w0 * cellSize + "," + 6 * cellSize + "H" + (w0 - 1)
-					* cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize + "V"
-					+ d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0 + "H"
-					+ w0 * cellSize + "Z";
-		} else if (d0 > 0) {
-			return "M" + (w0 + 1) * cellSize + "," + (d0 - 1) * cellSize + "H"
-					+ w0 * cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize
-					+ "V" + d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0
-					+ "H" + (w0 + 1) * cellSize + "Z";
-		}
-	}
 	
 	d3.select(self.frameElement).style("height", "2910px");
-	
 	
 	callback();
 	
@@ -149,7 +145,7 @@ function yearView(k, selected,monthColors, callback) {
 
 
 
-
+/* ---- Controllers ---- */
 
 
 function yearViewUpdate() {
@@ -163,44 +159,42 @@ function yearViewUpdate() {
 
 }
 
-	$('.label').mouseover(function(){
-		
-	});
+
+$(document).ready(function(){
 	
 	$('.day').mouseover(function(){
 		$(this).css('stroke','#444444'); //111155
-		//$(this).css('box-shadow','inset 0px -5px 10px 0px rgba(0, 0, 0, 0.5)')
 	});
 	
 	$('.day').mouseleave(function(){
-		$(this).css('stroke',"")
-		//$(this).css('box-shadow','');
+		$(this).css('stroke',"");
 	});
 		
 
-		$(".monthLabel").mouseover(function() {
-			$(this).css("cursor", "pointer");
-			$(this).addClass("monthLabelMouse");
-		});
+	$(".monthLabel").mouseover(function() {
+		$(this).css("cursor", "pointer");
+		$(this).addClass("monthLabelMouse");
+	});
 		
-		$(".monthLabel").mouseleave(function() {
-			$(this).addClass("monthLabel");
-		});
+	$(".monthLabel").mouseleave(function() {
+		$(this).addClass("monthLabel");
+	});
 		
-		$(".monthLabel").click(
-				function() {
-					$(".monthLabel").css("fill", "#000000");
+	$(".monthLabel").click(
+		function() {
+			$(".monthLabel").css("fill", "#000000");
 					
-					$("#settings").show();
-					appModel.selectedYear=+this.attributes.yearNumber.value;
-					appModel.selectedMonth=+this.attributes.monthNumber.value;
+			$("#settings").show();x
+			appModel.selectedYear=+this.attributes.yearNumber.value;
+			appModel.selectedMonth=+this.attributes.monthNumber.value;
 					
-					monthView = new MonthView(k, selected,
-							+this.attributes.yearNumber.value,
-							+this.attributes.monthNumber.value,
-							monthColors,
-							function(){});
-					$(this).css("fill", "#559393");
-				});
+			monthView = new MonthView(k, selected,
+				+this.attributes.yearNumber.value,
+				+this.attributes.monthNumber.value,
+				monthColors,
+			function(){});
+			$(this).css("fill", "#559393");
+	});
 
 
+});
