@@ -163,3 +163,19 @@ h1{
 #footer a:hover {
   color: #fda363;
  }
+ /*
+.spinspan {
+ 	background-color: #346634;
+	margin: 0px;
+	padding: 0px;
+	width: 16px;
+	display: inline-block;
+};*/
+.statustextspan{
+	margin-left: 20px;
+	margin-top: 4px;
+	padding: 0px;
+	display: inline-block;
+};
+
+

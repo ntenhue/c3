@@ -29,6 +29,7 @@ function AskGoogle(calendarModel) {
 			&& calendarModel.calendars[k].events != null) {
 				console.log(calendarModel.calendars[k].summary, "already up-to-date")
 				appModel.setCldrStatus(k,"updated");
+				
 			}else{
 				console.log(calendarModel.calendars[k].summary, "updates found"); 
 				
