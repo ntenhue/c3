@@ -73,28 +73,6 @@ function yearView(k, selected,monthColors, callback) {
 				}) 
 		.datum(format);
 	
-
-	
-	
-	
-
-	
-	
-	
-	$('.label').mouseover(function(){
-		
-	});
-	
-	$('.day').mouseover(function(){
-		$(this).css('stroke','#444444'); //111155
-		//$(this).css('box-shadow','inset 0px -5px 10px 0px rgba(0, 0, 0, 0.5)')
-	});
-	
-	$('.day').mouseleave(function(){
-		$(this).css('stroke',"")
-		//$(this).css('box-shadow','');
-	});
-		
 	var monthPath = svg.selectAll(".month")
 		.data(function(d) {	return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
 		.enter().append("path")
@@ -111,31 +89,6 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("yearNumber", function(d) { return d3.time.format("%Y")(d);})
 		.attr("monthNumber", function(d) { return d3.time.format("%m")(d); })
 		.text(function(d) { return d3.time.format("%b")(d) });
-		
-		$(".monthLabel").mouseover(function() {
-			$(this).css("cursor", "pointer");
-			$(this).addClass("monthLabelMouse");
-		});
-		
-		$(".monthLabel").mouseleave(function() {
-			$(this).addClass("monthLabel");
-		});
-		
-		$(".monthLabel").click(
-				function() {
-					$(".monthLabel").css("fill", "#000000");
-					
-					$("#settings").show();
-					appModel.selectedYear=+this.attributes.yearNumber.value;
-					appModel.selectedMonth=+this.attributes.monthNumber.value;
-					
-					monthView = new MonthView(k, selected,
-							+this.attributes.yearNumber.value,
-							+this.attributes.monthNumber.value,
-							monthColors,
-							function(){});
-					$(this).css("fill", "#559393");
-				});
 
 		function monthLabelPositionX(t0) {
 			var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0), d0 = +day(t0), w0 = +week(t0), d1 = +day(t1), w1 = +week(t1);
@@ -210,6 +163,44 @@ function yearViewUpdate() {
 
 }
 
+	$('.label').mouseover(function(){
+		
+	});
+	
+	$('.day').mouseover(function(){
+		$(this).css('stroke','#444444'); //111155
+		//$(this).css('box-shadow','inset 0px -5px 10px 0px rgba(0, 0, 0, 0.5)')
+	});
+	
+	$('.day').mouseleave(function(){
+		$(this).css('stroke',"")
+		//$(this).css('box-shadow','');
+	});
+		
 
+		$(".monthLabel").mouseover(function() {
+			$(this).css("cursor", "pointer");
+			$(this).addClass("monthLabelMouse");
+		});
+		
+		$(".monthLabel").mouseleave(function() {
+			$(this).addClass("monthLabel");
+		});
+		
+		$(".monthLabel").click(
+				function() {
+					$(".monthLabel").css("fill", "#000000");
+					
+					$("#settings").show();
+					appModel.selectedYear=+this.attributes.yearNumber.value;
+					appModel.selectedMonth=+this.attributes.monthNumber.value;
+					
+					monthView = new MonthView(k, selected,
+							+this.attributes.yearNumber.value,
+							+this.attributes.monthNumber.value,
+							monthColors,
+							function(){});
+					$(this).css("fill", "#559393");
+				});
 
 
