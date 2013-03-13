@@ -11,17 +11,13 @@ font: 8px Tahoma;
 }
 .day {
   fill: #fff;
-  /*stroke: #ccc;*/
 }
+
 .month {
   fill: none;
-  stroke: #888888;
-  stroke-width: 1px;
-}
- 
-.canvas{
-
-}     
+  stroke: #EEEEEE;
+  stroke-width: 0.5px;
+}  
 
 
 .RdYlGn .q0-11{fill:rgb(255,255,220)}
