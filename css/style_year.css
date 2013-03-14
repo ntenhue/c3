@@ -13,29 +13,30 @@ font: 8px Tahoma;
 }
 
 .labelGrey {
-height:17px;
-width:17px;
 fill:#DDDDDD;
 font: 8px Tahoma;
+font-weight:50;
 }
 
 .weekdayLabel {
-fill:#BBBBCC;
+fill:#DDDDEE;
 font: 8px Tahoma;
+font-weight:50;
 }
 
 .weeknumberLabel {
-fill:#BBBBCC;
+fill:#DEDEEE;
 font: 8px Tahoma;
+font-weight:50;
 }
 
 .day {
-  fill: #fff;
+  fill: #fdfdff;
 }
 
 .month {
   fill: none;
-  stroke: #BBBBBB;
+  stroke: #888888;
   stroke-width: 1px;
   stroke-dasharray: 2,2;
   stroke-opacity:0.1;

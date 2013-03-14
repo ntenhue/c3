@@ -111,6 +111,11 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("transform", "translate(9,-3)")
 		.text( function(d) { return +weekSun(d)+1 ; });
 			
+	var weeknumberText = svg.append("text") 
+		.attr("class", "weeknumberLabel") 
+		.style("text-anchor", "middle")
+		.attr("transform", "translate(-10.5,-3)")
+		.text("Week");
 
 	var rect = svg.selectAll(".day")
 		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -235,12 +240,12 @@ function yearViewUpdate() {
 function monthLabelController(monthLabel, event, k, selected, monthColors) {
 	if (event.type == "mouseover") {		
 		$(monthLabel).css("cursor", "pointer");
-		$(monthLabel).addClass("monthLabelMouse");
+		$(monthLabel).css("fill","#559393");
 	} else if (event.type == "mouseout") {
-		$(monthLabel).addClass("monthLabel");
+		$(monthLabel).css("fill","");
 	} else if (event.type == "click") {
-		$(monthLabel).css("fill", "#000000");
 		$("#settings").show();
+		$(monthLabel).css("fill","#559393");
 		appModel.selectedYear=+monthLabel.attributes.yearNumber.value;
 		appModel.selectedMonth=+monthLabel.attributes.monthNumber.value;
 		monthView = new MonthView(k, selected,
@@ -248,13 +253,12 @@ function monthLabelController(monthLabel, event, k, selected, monthColors) {
 			+monthLabel.attributes.monthNumber.value,
 			monthColors,
 		function(){});
-		$("monthLabel").css("fill", "#559393");
 	}
 }
 
 function dayController(day, event) {
 	if (event.type == "mouseover") {		
-		$(day).css('stroke','#444444'); //111155
+		$(day).css('stroke','#444444');
 	} else if (event.type == "mouseout") {
 		$(day).css('stroke',"");
 	}
