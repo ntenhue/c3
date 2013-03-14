@@ -57,6 +57,12 @@ p {
 	color: #BB0000;
 }
 
+.goright{
+
+	float:right;
+
+}
+
 h1{
 	font: 22px 'bebas_neueregular';
 	font-family: 'bebas_neueregular', Helvetica, Arial, Verdana;
