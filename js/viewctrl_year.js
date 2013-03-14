@@ -5,6 +5,7 @@ function yearView(k, selected,monthColors, callback) {
 	var width = 960, height = 166, cellSize = 17; 
 	var day = d3.time.format("%w"), 
 	week = d3.time.format("%U"), 
+	weekSun = d3.time.format("%W"),
 	format = d3.time.format("%Y-%m-%d");
 	
 	var color = d3.scale.quantize() 
@@ -28,26 +29,40 @@ function yearView(k, selected,monthColors, callback) {
 
 
 	var dateLabel = svg.selectAll(".label")
-	.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-	.enter().append("text") 
-	.attr("class", "label") 
-	.attr("x", function(d) {
-		if (day(d) == 0) {
-			return (week(d) - 1) * cellSize;
-		} else if (day(d) > 0) {
-			return week(d) * cellSize;
-		}
-	}) 
-	.attr("y", function(d) {
-		if (day(d) == 0) {
-			return 6 * cellSize;
-		} else if (day(d) > 0) {
-			return (day(d) - 1) * cellSize;
-		}
-	}) 
-	.attr("transform", "translate(9,12)")
-	.style("text-anchor", "middle")
-	.text( function(d) { return d3.time.format("%d")(d); }); 
+		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+		.enter().append("text") 
+		.attr("class", "label") 
+		.attr("x",function(d){
+			return weekSun(d) * cellSize;
+		})
+		.attr("y", function(d) {
+			if (day(d) == 0) {
+				return 6 * cellSize;
+			} else if (day(d) > 0) {
+				return (day(d) - 1) * cellSize;
+			}
+		}) 
+		.attr("transform", "translate(9,12)")
+		.style("text-anchor", "middle")
+		.text( function(d) { return d3.time.format("%d")(d); }); 
+		
+	var dateLabelGrey = svg.selectAll(".label")
+		.data(function(d) { return d3.time.days( d3.time.monday(new Date(d,0,1)),new Date(d,0,1) ); })
+		.enter().append("text") 
+		.attr("class", "labelGrey") 
+		.attr("x",function(d){
+			return weekSun(d) * cellSize;
+		})
+		.attr("y", function(d) {
+			if (day(d) == 0) {
+				return 6 * cellSize;
+			} else if (day(d) > 0) {
+				return (day(d) - 1) * cellSize;
+			}
+		}) 
+		.attr("transform", "translate(9,12)")
+		.style("text-anchor", "middle")
+		.text( function(d) { return d3.time.format("%d")(d); }); 
 	
 
 	var rect = svg.selectAll(".day")
@@ -57,13 +72,17 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("width", cellSize)
 		.attr("height", cellSize)
 		.attr("style:opacity","0.8")
-		.attr("x", function(d) {
+		.attr("x",function(d){
+			return weekSun(d) * cellSize;
+		})
+		/*.attr("x", function(d) {
 					if (day(d) == 0) {
 						return (week(d) - 1) * cellSize;
 					} else if (day(d) > 0) {
 						return week(d) * cellSize;
 					}
-				}) 
+				})
+				*/ 
 		.attr("y", function(d) {
 					if (day(d) == 0) {
 						return 6 * cellSize;
@@ -104,23 +123,27 @@ function yearView(k, selected,monthColors, callback) {
 		function monthPath(t0) { 
 		
 			var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0), 
-			d0 = +day(t0), w0 = +week(t0), 
-			d1 = +day(t1), w1 = +week(t1); 
+			d0 = +day(t0), w0 = +weekSun(t0), 
+			d1 = +day(t1), w1 = +weekSun(t1); 
+
+
 			if (d0 == 0) {
-				return "M" + w0 * cellSize + "," + 6 * cellSize + "H" + (w0 - 1)
+				return "M" + (w0+1) * cellSize + "," + 6 * cellSize + "H" + w0
 						* cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize + "V"
 						+ d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0 + "H"
-						+ w0 * cellSize + "Z";
+						+ (w0+1) * cellSize + "Z";
 			} else if (d0 > 0) {
 				return "M" + (w0 + 1) * cellSize + "," + (d0 - 1) * cellSize + "H"
 						+ w0 * cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize
 						+ "V" + d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0
 						+ "H" + (w0 + 1) * cellSize + "Z";
 			}
+
 		}
+		
 	
 
-/* ---- Import the Data ---- */
+/* ---- Import the events on date Data ---- */
 
 	var data = d3.nest() 
 		.key(function(d) { return d.date; }) 
@@ -132,7 +155,7 @@ function yearView(k, selected,monthColors, callback) {
 			.attr("busyHours",function(d){ return data[d]; })
 			.attr("date",function(d){ return d; } )
 			.append("svg:title")
-			.text(function(d){ return data[d] + " hours of events here." });
+			.text(function(d){ return data[d] + " hours of events on the day." });
 
 
 	

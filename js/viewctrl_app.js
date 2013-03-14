@@ -16,7 +16,6 @@ this.update = function(what) {
 	if (what == "events added") {		
 		appModel.setWorkingStatus("calculating occupancy...");
 		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
-
 		yearViewUpdate();
 		monthViewUpdate();
 		

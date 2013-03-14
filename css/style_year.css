@@ -5,18 +5,27 @@ fill:black;
 .monthLabelMouse {
 fill:#559393;
 }
+
 .label {
 fill:#000000;
 font: 8px Tahoma;
 }
+
+.labelGrey {
+fill:#BBBBBB;
+font: 8px Tahoma;
+}
+
 .day {
   fill: #fff;
 }
 
 .month {
   fill: none;
-  stroke: #EEEEEE;
-  stroke-width: 0.5px;
+  stroke: #BBBBBB;
+  stroke-width: 1px;
+  stroke-dasharray: 2,2;
+  stroke-opacity:0.1;
 }  
 
 
