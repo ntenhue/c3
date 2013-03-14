@@ -1,5 +1,6 @@
 .monthLabel {
 fill:black;
+text-decoration:underline;
 }
 
 .monthLabelMouse {
@@ -12,7 +13,19 @@ font: 8px Tahoma;
 }
 
 .labelGrey {
-fill:#BBBBBB;
+height:17px;
+width:17px;
+fill:#DDDDDD;
+font: 8px Tahoma;
+}
+
+.weekdayLabel {
+fill:#BBBBCC;
+font: 8px Tahoma;
+}
+
+.weeknumberLabel {
+fill:#BBBBCC;
 font: 8px Tahoma;
 }
 

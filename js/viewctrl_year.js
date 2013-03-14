@@ -2,10 +2,11 @@ function yearView(k, selected,monthColors, callback) {
 	
 	$("#yearViewCanvas").empty();
 	
-	var width = 960, height = 166, cellSize = 17; 
+	var width = 970, height = 166, cellSize = 17; 
 	var day = d3.time.format("%w"), 
 	week = d3.time.format("%U"), 
 	weekSun = d3.time.format("%W"),
+	year = d3.time.format("%Y"),
 	format = d3.time.format("%Y-%m-%d");
 	
 	var color = d3.scale.quantize() 
@@ -23,7 +24,7 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("id", function(d) { return "year" + d; }); 
 	
 	svg.append("text")
-		.attr("transform" , "translate(-20," + cellSize * 3.5 + ")rotate(-90)")
+		.attr("transform" , "translate(-25," + cellSize * 3.5 + ")rotate(-90)")
 		.style("text-anchor", "middle")
 		.text(function(d) {return d;});
 
@@ -46,12 +47,12 @@ function yearView(k, selected,monthColors, callback) {
 		.style("text-anchor", "middle")
 		.text( function(d) { return d3.time.format("%d")(d); }); 
 		
-	var dateLabelGrey = svg.selectAll(".label")
+	var dateLabelGrey = svg.selectAll(".labelGrey")
 		.data(function(d) { return d3.time.days( d3.time.monday(new Date(d,0,1)),new Date(d,0,1) ); })
 		.enter().append("text") 
 		.attr("class", "labelGrey") 
 		.attr("x",function(d){
-			return weekSun(d) * cellSize;
+			return 0* cellSize;
 		})
 		.attr("y", function(d) {
 			if (day(d) == 0) {
@@ -63,7 +64,53 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("transform", "translate(9,12)")
 		.style("text-anchor", "middle")
 		.text( function(d) { return d3.time.format("%d")(d); }); 
-	
+
+	var dateLabelGreyEnd = svg.selectAll(".labelGreyEnd")
+		.data(function(d) { return d3.time.days( new Date(d+1,0,1),d3.time.monday(new Date(d+1,0,8)) ); })
+		.enter().append("text") 
+		.attr("class", "labelGrey") 
+		.attr("x",function(d){
+			return weekSun(new Date(year(d),0,0)) * cellSize;
+		})
+		.attr("y", function(d) {
+			if (day(d) == 0) {
+				return 6 * cellSize;
+			} else if (day(d) > 0) {
+				return (day(d) - 1) * cellSize;
+			}
+		}) 
+		.attr("transform", "translate(9,12)")
+		.style("text-anchor", "middle")
+		.text( function(d) { return d3.time.format("%d")(d); }); 
+
+	var weekdayLabel = svg.selectAll(".weekdayLabel")
+		.data(function(d) { return d3.time.days( d3.time.monday(new Date(d,0,1)),d3.time.monday(new Date(d,0,8)) ); })
+		.enter().append("text") 
+		.attr("class", "weekdayLabel") 
+		.attr("x",0)
+		.attr("y", function(d) {
+			if (day(d) == 0) {
+				return 6 * cellSize;
+			} else if (day(d) > 0) {
+				return (day(d) - 1) * cellSize;
+			}
+		}) 
+		.style("text-anchor", "middle")
+		.attr("transform", "translate(-11,12)")
+		.text( function(d) { return d3.time.format("%a")(d); });
+		
+	var weeknumberLabel = svg.selectAll(".weeknumberLabel")
+		.data(function(d) { return d3.time.weeks( new Date(d,0,1), new Date(d+1,0,1) ).concat([new Date(d+1,0,0)]); })
+		.enter().append("text") 
+		.attr("class", "weeknumberLabel") 
+		.attr("x",function(d){
+			return weekSun(d) * cellSize;
+		})
+		.attr("y",0)
+		.style("text-anchor", "middle")
+		.attr("transform", "translate(9,-3)")
+		.text( function(d) { return +weekSun(d)+1 ; });
+			
 
 	var rect = svg.selectAll(".day")
 		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -75,14 +122,6 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("x",function(d){
 			return weekSun(d) * cellSize;
 		})
-		/*.attr("x", function(d) {
-					if (day(d) == 0) {
-						return (week(d) - 1) * cellSize;
-					} else if (day(d) > 0) {
-						return week(d) * cellSize;
-					}
-				})
-				*/ 
 		.attr("y", function(d) {
 					if (day(d) == 0) {
 						return 6 * cellSize;
@@ -104,7 +143,7 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("class", "monthLabel")
 		.style("text-anchor", "middle")
 		.attr("x", monthLabelPositionX)
-		.attr("y", -15)
+		.attr("y", -20)
 		.attr("yearNumber", function(d) { return d3.time.format("%Y")(d);})
 		.attr("monthNumber", function(d) { return d3.time.format("%m")(d); })
 		.text(function(d) { return d3.time.format("%b")(d) });
