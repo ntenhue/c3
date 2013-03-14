@@ -89,7 +89,7 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("yearNumber", function(d) { return d3.time.format("%Y")(d);})
 		.attr("monthNumber", function(d) { return d3.time.format("%m")(d); })
 		.text(function(d) { return d3.time.format("%b")(d) });
-
+	
 /* ---- functions ---- */
 
 		function monthLabelPositionX(t0) {
@@ -138,6 +138,8 @@ function yearView(k, selected,monthColors, callback) {
 	
 	d3.select(self.frameElement).style("height", "2910px");
 	
+	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, k, selected, monthColors);});
+	$(".day").bind('mouseenter mouseout', function() {dayController(this, event);});
 	callback();
 	
 }
@@ -159,42 +161,39 @@ function yearViewUpdate() {
 
 }
 
+/*
+ * Controller function for monthLabel logic.
+ * Params:
+ * monthLabel: the label itself
+ * event: event type
+ * k: ?
+ * selected: the array is selected calendars
+ * monthColors: the array of available colors for months
+ */
+function monthLabelController(monthLabel, event, k, selected, monthColors) {
+	if (event.type == "mouseover") {		
+		$(monthLabel).css("cursor", "pointer");
+		$(monthLabel).addClass("monthLabelMouse");
+	} else if (event.type == "mouseout") {
+		$(monthLabel).addClass("monthLabel");
+	} else if (event.type == "click") {
+		$(monthLabel).css("fill", "#000000");
+		$("#settings").show();
+		appModel.selectedYear=+monthLabel.attributes.yearNumber.value;
+		appModel.selectedMonth=+monthLabel.attributes.monthNumber.value;
+		monthView = new MonthView(k, selected,
+			+monthLabel.attributes.yearNumber.value,
+			+monthLabel.attributes.monthNumber.value,
+			monthColors,
+		function(){});
+		$("monthLabel").css("fill", "#559393");
+	}
+}
 
-$(document).ready(function(){
-	
-	$('.day').mouseover(function(){
-		$(this).css('stroke','#444444'); //111155
-	});
-	
-	$('.day').mouseleave(function(){
-		$(this).css('stroke',"");
-	});
-		
-
-	$(".monthLabel").mouseover(function() {
-		$(this).css("cursor", "pointer");
-		$(this).addClass("monthLabelMouse");
-	});
-		
-	$(".monthLabel").mouseleave(function() {
-		$(this).addClass("monthLabel");
-	});
-		
-	$(".monthLabel").click(
-		function() {
-			$(".monthLabel").css("fill", "#000000");
-					
-			$("#settings").show();x
-			appModel.selectedYear=+this.attributes.yearNumber.value;
-			appModel.selectedMonth=+this.attributes.monthNumber.value;
-					
-			monthView = new MonthView(k, selected,
-				+this.attributes.yearNumber.value,
-				+this.attributes.monthNumber.value,
-				monthColors,
-			function(){});
-			$(this).css("fill", "#559393");
-	});
-
-
-});
+function dayController(day, event) {
+	if (event.type == "mouseover") {		
+		$(day).css('stroke','#444444'); //111155
+	} else if (event.type == "mouseout") {
+		$(day).css('stroke',"");
+	}
+}
