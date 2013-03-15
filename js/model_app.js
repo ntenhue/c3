@@ -1,16 +1,32 @@
+/*
+ * AppModel
+ * contains attributes and methods that affect representation but do not change the data
+ * 
+ * Messages on status updates are posted to globally visible app model 
+ * (since they do not affect the actual data, I avoid having them in calendar model). 
+ * Then app observers parse messages and perform actions. 
+ * Maybe it is not the best way to make architecture, 
+ * but it nicely keeps the stuff separate and allows 
+ * asynchronous calls to API without of having timers 
+ * or while loops to wait for response.
+ */
+
 function AppModel() {
+	/***************************************************************************
+	 * APP PROPERTIES
+	 **************************************************************************/
+	
 	this.loginStatus = false;
 	this.libraryStatus = false;
 	this.calendarsLoaded = false;
 	
-	this.yearFirst = 2012;
+	this.yearFirst = 2012; // hardcoded but prepared to become dynamic
 	this.yearLast = 2013;
 
 	this.selectedYear;
 	this.selectedMonth;
 
 	this.selectedCldrs=[];
-
 	this.cldrStatus = [];
 	this.workingStatus;
 	

@@ -1,12 +1,13 @@
-
-	/*****************************************  
-	    CalendarModel    
-	*****************************************/
+/*
+ * Calendar Model
+ * Contains all data and performs methods over it
+ * 
+ */
 
 function CalendarModel(appModel){
 	this.calendars= [];
 	this.totalBusyHours = []; 
-this.colors = [];
+	this.colors = [];
 
 
 
@@ -142,7 +143,12 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 
 
 	
-	
+/*
+ * updateEventsDuration calculates duration of all events
+ * params: array of events, google style
+ * returns: array of events, google style, with property duration containing the result for each event
+ * 
+ */	
 this.updateEventsDuration = function (events) {
 
 	// parse a date based on a dateDay field (e.g. 2011-09-03) and a dateTime field (e.g. 09:30)
@@ -189,6 +195,14 @@ this.updateEventColor = function (events) {
 
 
 
+/*
+ * updateTotalBusyHours in all calendars
+ * params: array of calendars, google style. array of the selected calendars
+ * returns: array of objects hours busy  
+ * each object gives busy hours inside one date. dates are unique
+ * [{'date':'yyyy-mm-dd', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] }, ... ]
+ * 
+ */
 this.updateTotalBusyHours = function (calendars, selected) {
 	
 	var ttlbzyhrs = [];
@@ -264,7 +278,14 @@ this.updateTotalBusyHours = function (calendars, selected) {
 
 
 
-
+/*
+ * updateBusyHours in one calendar
+ * params: array of events, google style
+ * returns: array of objects hours busy  
+ * each object gives busy hours inside one date. dates are unique
+ * [{'date':'yyyy-mm-dd', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] }, ... ]
+ * 
+ */
 this.updateBusyHours = function (events) {
 	
 	var busyHours = [];
@@ -321,7 +342,10 @@ this.updateBusyHours = function (events) {
 /*****************************************  
     Observable implementation    
 *****************************************/
-
+/*
+ * Noone really listens to it nowdays
+ * see AppModel for explanations
+ * 
 this._observers = [];
 
 this.addObserver = function(observer) {
@@ -334,6 +358,6 @@ this.notifyObservers = function(what,k)
 	{
 		this._observers[i].update(what,k);
 	}	
-}
+}*/
 	
 }
