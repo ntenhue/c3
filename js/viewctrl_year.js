@@ -167,20 +167,34 @@ function yearView(k, selected,monthColors, callback) {
 		function monthPath(t0) { 
 		
 			var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0), 
-			d0 = +day(t0), w0 = +weekSun(t0), 
-			d1 = +day(t1), w1 = +weekSun(t1); 
+				d0 = +day(t0), //w0 = +week(t0), 
+				d1 = +day(t1), //w1 = +week(t1);
+				w0 = +weekSun(t0),
+				w1 = +weekSun(t1); 
 
-
+			/*
+			if (d0 == 0) {
+				return "M" + w0 * cellSize + "," + 6 * cellSize + "H" + (w0 - 1)
+						* cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize + "V"
+						+ d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0 + "H"
+						+ w0 * cellSize + "Z";
+			*/
 			if (d0 == 0) {
 				return "M" + (w0+1) * cellSize + "," + 6 * cellSize + "H" + w0
 						* cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize + "V"
 						+ d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0 + "H"
 						+ (w0+1) * cellSize + "Z";
-			} else if (d0 > 0) {
+			} else if (d0 > 0 && d1 !== 0) {
 				return "M" + (w0 + 1) * cellSize + "," + (d0 - 1) * cellSize + "H"
 						+ w0 * cellSize + "V" + 7 * cellSize + "H" + w1 * cellSize
 						+ "V" + d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0
 						+ "H" + (w0 + 1) * cellSize + "Z";
+			} else if (d0 > 0 && d1 == 0) {
+				return "M" + (w0 + 1) * cellSize + "," + (d0 - 1) * cellSize + "H"
+						+ w0 * cellSize + "V" + 7 * cellSize + "H" + (w1+1) * cellSize
+						+ "V" + d1 * cellSize + "H" + (w1 + 1) * cellSize + "V" + 0
+						+ "H" + (w0 + 1) * cellSize + "Z";
+						
 			}
 
 		}
