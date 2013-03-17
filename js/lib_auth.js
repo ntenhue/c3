@@ -71,6 +71,6 @@ function Authentification(appModel) {
 		
 		
 
-	}, 200);
+	}, 500);
 
 }

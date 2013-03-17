@@ -18,9 +18,7 @@ appModel.addObserver(this);
 this.update = function(what) {
 
 	if (what == "calendars loaded") {
-		// create year view at the first time
-		yearView(null, appModel.selectedCldrs, calendarModel.colors,function() {});
-		legendView("#legendhere");
+
 		}
 	
 	
@@ -31,7 +29,7 @@ this.update = function(what) {
 		monthViewUpdate();
 		}
 	
-	
+	/*
 	if (what == "updated") {
 		for ( var k in appModel.cldrStatus) {
 			if(appModel.getCldrStatus(k) == "checking...") return false;
@@ -43,7 +41,7 @@ this.update = function(what) {
 		yearViewUpdate();
 		monthViewUpdate();
 		}
-	
+	*/
 	
 	}//update
 }
@@ -53,23 +51,27 @@ this.update = function(what) {
 function AppCtrl(appModel, appView) {
 	/*
 	 * Initialization
-	 * Startup work flow consists only of one predefined call
+	 * Startup work flow
 	 *
 	 */
 	
 	authentification = new Authentification(appModel);
+	
+	// while waiting API to load, initialize model and create the grid
+	calendarModel = new CalendarModel(appModel);
+	yearViewUpdate();
+	legendView("#legendhere");
 
 	
 	appModel.addObserver(this);
 	this.update = function(what) {
 
 		if (what == "library loaded") {
-			// initialization
 			// the other necessary things are called by message, asynchronously
-			calendarModel = new CalendarModel(appModel);
 			listView = new ListView($("#listhere"), calendarModel);
 			askGoogle = new AskGoogle(calendarModel);			
 			askGoogle.loadCalendars();
+			
 			}	
 		
 	}//update

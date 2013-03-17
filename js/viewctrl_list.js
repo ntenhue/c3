@@ -79,15 +79,7 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 				item.div.append(" ");
 				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
-				// TODO: check parameter referencing in JS to callbacks
-				//item.square.click(function() {listClick(listView, calendarModel, i /*$(this).attr('id')*/);});	
-
-				
-
-			
-				item.square.on("click", { one: this, two: calendarModel, three: i }, listClick);
-
-				
+				item.square.on("mousedown", { index: i }, listMouseDown); // attach listener
 				
 				this.cldrList[i] = item;
 				this.listCalendarsDiv.append(this.cldrList[i].div);
@@ -99,12 +91,11 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 		 * refresh colors of squares
 		 */
 		if (what == "selectedCldrs") {
-
-			var calendars = calendarModel.getCalendars();
+			
 			for ( var i in this.cldrList) {
 				if (appModel.selectedCldrs[i]) {
-					this.cldrList[i].square.css("background-color",calendars[i].backgroundColor);
-					this.cldrList[i].square.css("border-color",calendars[i].backgroundColor);
+					this.cldrList[i].square.css("background-color",calendarModel.colors[i]);
+					this.cldrList[i].square.css("border-color",calendarModel.colors[i]);
 				} else {
 					this.cldrList[i].square.css("background-color", "#FFFFFF");
 					this.cldrList[i].square.css("border-color", "#CCCCCC");
@@ -117,7 +108,7 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 		 */
 		if (what == "cldrStatus") {
 			for ( var i in this.cldrList)
-			if (appModel.cldrStatus[i].substring(0,7) == "loading" ||
+			if (appModel.cldrStatus[i] == "loading..." ||
 				appModel.cldrStatus[i].substring(0,8) == "<br>load" )	{
 				// show only when it looks like "loading" or something
 				this.cldrList[i].status.html(appModel.getCldrStatus(i));
@@ -133,6 +124,7 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 		 */
 		if (what == "workingStatus") {
 			this.statusTextSpan.html(appModel.workingStatus);
+			
 			if (appModel.workingStatus == ""){
 				this.spinner.stop(document.getElementById('spinnerhere'));
 			}else{
@@ -145,36 +137,27 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 }
 
 
-
-
-//function listClick(listView, calendarModel, index) {
-	
-function listClick(event) { var listView=event.data.one;
-							var calendarModel=event.data.two;
-							var index=event.data.three;
-
-
-	// XXX: optimize this. slow call, find the culprit
+function listMouseDown(event) { 
+	var index=event.data.index;
 	appModel.setSelectedCldrs(index, !appModel.getSelectedCldrs(index));
 
-	//listView.update("calendarsOnOff");
+	if (appModel.cldrStatus[index] != "initiated"){
+		appModel.setWorkingStatus("calculating occupancy...");
+		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
+		yearViewUpdate();
+		monthViewUpdate();
+	}
 	
-	
-	appModel.setWorkingStatus("calculating occupancy...");
-	calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
 
-	yearViewUpdate();
-	monthViewUpdate();
-	
-	
 	for ( var k in appModel.selectedCldrs) {
-		if (appModel.selectedCldrs[k] &&!(appModel.cldrStatus[k].substring(0,4) == "load")) {
+		
+		if((appModel.selectedCldrs[k]) &&
+		  !(appModel.cldrStatus[k].substring(0,8) == "<br>load"||
+			appModel.cldrStatus[k] == "loading..." ||
+			appModel.cldrStatus[k] == "checking...")){
+			
 			appModel.setWorkingStatus("loading...");
 			askGoogle.checkUpdatesAndLoad(k);
 			}
-		}
-
-
-
+		}//for
 }
-	

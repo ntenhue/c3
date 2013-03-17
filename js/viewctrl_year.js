@@ -258,7 +258,6 @@ function monthLabelController(monthLabel, event, k, selected, monthColors) {
 	} else if (event.type == "mouseout") {
 		$(monthLabel).css("fill","");
 	} else if (event.type == "click") {
-		$("#settings").show();
 		$(monthLabel).css("fill","#559393");
 		appModel.selectedYear=+monthLabel.attributes.yearNumber.value;
 		appModel.selectedMonth=+monthLabel.attributes.monthNumber.value;

@@ -185,3 +185,100 @@ h1{
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.monthLabel {
+fill:black;
+text-decoration:underline;
+}
+
+.monthLabelMouse {
+fill:#559393;
+}
+
+.label {
+fill:#000000;
+font: 8px Tahoma;
+}
+
+.labelGrey {
+fill:#DDDDDD;
+font: 8px Tahoma;
+font-weight:50;
+}
+
+.weekdayLabel {
+fill:#DDDDEE;
+font: 8px Tahoma;
+font-weight:50;
+}
+
+.weeknumberLabel {
+fill:#DEDEEE;
+font: 8px Tahoma;
+font-weight:50;
+}
+
+.day {
+  fill: #ffffff;
+}
+
+.month {
+  fill: none;
+  stroke: #CBCBCB;
+  stroke-width: 1px;
+}  
+
+
+.RdYlGn .q0-11{fill:rgb(255,255,220)}
+.RdYlGn .q1-11{fill:rgb(255,255,204)}
+.RdYlGn .q2-11{fill:rgb(255,237,160)}
+.RdYlGn .q3-11{fill:rgb(254,217,118)}
+.RdYlGn .q4-11{fill:rgb(254,178,76)}
+.RdYlGn .q5-11{fill:rgb(253,141,60)}
+.RdYlGn .q6-11{fill:rgb(252,78,42)}
+.RdYlGn .q7-11{fill:rgb(227,26,28)}
+.RdYlGn .q8-11{fill:rgb(177,0,38)}
+.RdYlGn .q9-11{fill:rgb(137,0,27)}
+.RdYlGn .q10-11{fill:rgb(73,0,12)}
+
+
+
