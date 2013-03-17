@@ -1,9 +1,19 @@
+/*
+ * Authentification
+ * custom library written on the basis of Google examples
+ * https://code.google.com/p/google-api-javascript-client/wiki/Authentication
+ * 
+ */
+
 function Authentification(appModel) {
 	var clientId = '237411638986.apps.googleusercontent.com';
 	var apiKey = 'AIzaSyCH9eEr4ijN_GsM0O-P6KIT9Y6n-VOTfOI';
 	var scopes = 'https://www.googleapis.com/auth/calendar';
 
+	
+	
 
+	//need to wait while gapi library loads
 	setTimeout(function() {
 
 		function handleClientLoad() {
@@ -55,12 +65,12 @@ function Authentification(appModel) {
 			
 
 		console.log('auth started...'); 
-		// automatic sign in
+		// start automatic sign in
 		this.handleClientLoad = new handleClientLoad();
 		
 		
 		
 
-	}, 1000);
+	}, 200);
 
 }

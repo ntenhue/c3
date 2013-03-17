@@ -48,8 +48,8 @@ function AppModel() {
 		this.notifyObservers("library loaded");
 	}
 	this.setCldrStatus = function(index, value) {
-		if (index == null) {
-			for ( var i in this.cldrStatus)this.cldrStatus[i] = value;
+		if (this.cldrStatus[index] == null) {
+			for (var i=0; i<index; i++)this.cldrStatus[i]=value;
 		} else {
 			this.cldrStatus[index] = value;
 		}
@@ -57,8 +57,8 @@ function AppModel() {
 		this.notifyObservers(value);
 	}
 	this.setSelectedCldrs = function(index, value) {
-		if (index == null) {
-			for ( var i in this.selectedCldrs)this.selectedCldrs[i] = value;
+		if (this.selectedCldrs[index] == null) {
+			for (var i=0; i<index; i++)this.selectedCldrs[i]=value;
 		} else {
 			this.selectedCldrs[index] = value;
 		}
@@ -83,6 +83,13 @@ function AppModel() {
 			return this.cldrStatus
 		} else {
 			return this.cldrStatus[index];
+		}
+	}
+	this.getSelectedCldrs = function(index) {
+		if (index == null) {
+			return this.selectedCldrs
+		} else {
+			return this.selectedCldrs[index];
 		}
 	}
 	this.getWorkingStatus = function() {

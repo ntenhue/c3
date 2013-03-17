@@ -1,11 +1,19 @@
+/*
+ * AskGoogle
+ * custom library written on the basis of GCalendar API documentation
+ * 
+ */
+
 
 function AskGoogle(calendarModel) {
-	
+
+	/*
+	 * loadCalendars
+	 */
 	this.loadCalendars = function() {
 		this.request =  gapi.client.calendar.calendarList.list();	
 		this.request.execute(function(resp) {
-			console.log("received calendars list:", resp);
-			
+			console.log("received calendars list:", resp);	
 			calendarModel.clearCalendars();
 			calendarModel.addCalendars(resp.items);
 			});
@@ -13,6 +21,14 @@ function AskGoogle(calendarModel) {
 	
 	
 	
+	/*
+	 * checkUpdatesAndLoad
+	 * function calls Google and asks for "updated" timestamp of calendar k
+	 * then it compares it with the timestamp stored at the previous successful load
+	 * 
+	 * if updates found or if there is no events loaded then 
+	 * 
+	 */	
 	this.checkUpdatesAndLoad = function(k) {
 		appModel.setCldrStatus(k,"checking...");
 		
@@ -46,7 +62,13 @@ function AskGoogle(calendarModel) {
 		
 		
 	
-	
+	/*
+	 * loadEvents
+	 * function calls Google and asks for events with specified settings
+	 * if the return is not empty, then the model is updated
+	 * if there are more pages to load, function calls itself as a recursive
+	 * 
+	 */	
 	// TODO: check this, optimize, remove magic number if possible
 	this.loadEvents = function(k, pageToken) {
 		this.request = gapi.client.calendar.events.list({
@@ -55,6 +77,7 @@ function AskGoogle(calendarModel) {
 			'singleEvents': true,
 			'showDeleted': false,
 			'orderBy': 'startTime',
+			'timeMin': (appModel.yearFirst)+'-01-01T00:00:00+01:00', 
 			'timeMax': (appModel.yearLast+1)+'-01-01T00:00:00+01:00', //+1 because it is exclusive
 			'fields': 'items(colorId,start,end,summary,id),nextPageToken,updated',
 			'pageToken': pageToken
