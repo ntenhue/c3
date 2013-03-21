@@ -213,8 +213,8 @@ function yearView(selected, monthColors, callback) {
 			.attr("class", function(d) { return "day " + color(data[d]);})
 			.attr("busyHours",function(d){ return data[d]; })
 			.attr("date",function(d){ return d; } )
-			.append("svg:title");
-			//.text(function(d){ return data[d] + " hours of events on the day." });
+			.append("svg:title")
+			.text(function(d){ return data[d] + " hours of events on the day." });
 
 
 	

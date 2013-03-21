@@ -48,14 +48,15 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 		}
 	}
 	
+	var data;
 	if (k!=null) {	
-		var data = calendarModel.updateBusyHours(calendarModel.calendars[k].events);	
+		data = calendarModel.updateBusyHours(calendarModel.calendars[k]);	
 		//var data = [].concat(calendarModel.calendars[k].busyHours);
 		var color = d3.scale.ordinal()
 	   .range([monthColors[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd",    "#00b050", "#c00000"]);
 	
 	} else {
-		var data = calendarModel.updateTotalBusyHours(calendarModel.calendars,selected);
+		data = calendarModel.updateTotalBusyHours(calendarModel.calendars,selected);
 		var color = d3.scale.ordinal()
 		.range(monthColors);
 
@@ -212,7 +213,7 @@ function monthViewUpdate(){
 	if (see!=0 && appModel.selectedMonth!=null) {	
 		if(see>1)k=null;
 		appModel.setWorkingStatus("updating month view...");
-		monthView = new MonthView (k, appModel.selectedCldrs,appModel.selectedYear,
+		monthView = new MonthView (appModel.selectedCldrs,appModel.selectedYear,
 									  appModel.selectedMonth, 
 									  calendarModel.colors,
 									  function(){appModel.setWorkingStatus("");	});
