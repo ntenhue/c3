@@ -77,9 +77,9 @@ this.clearEvents = function (k) {
  * GETTERS
  **************************************************************************/
 this.getCalendars = function () { return this.calendars;	        }
-this.getEvents = function (k) 	{ return this.calendars[k].events;	}	
+this.getEvents = function (k) 	{ return k != null ? this.calendars[k].events : null;	}	
 this.getTotalBusyHours = function () { return this.totalBusyHours;	        }
-this.getBusyHours = function (k) { return this.calendars[k].busyHours;	        }
+this.getBusyHours = function (k) { return k != null ? this.calendars[k].busyHours : null;	        }
 
 
 
@@ -131,6 +131,11 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 	// all march: ("2013-03")
 	// all 2013:  ("2013")
 	
+	// defensive coding
+	if (events == null) {
+		return null;
+	}
+	
 	if (tillAsked == null) tillAsked=fromAsked;
 	var result=[];
 	
@@ -148,7 +153,7 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 	if (tillAsked.length>=9) till.d = tillAsked.substring(8,10);
 							 till.date = new Date(till.y,till.m-1,till.d);
 		
-	for (var i in this.events){
+	for (var i in events){
 		var eventDateStart = new Date (events[i].start.date.substring(0,4),
 									   events[i].start.date.substring(5,7)-1,
 									   events[i].start.date.substring(8,10));

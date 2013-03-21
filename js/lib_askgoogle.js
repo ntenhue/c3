@@ -81,7 +81,7 @@ function AskGoogle(calendarModel) {
 			'orderBy': 'startTime',
 			'timeMin': (appModel.yearFirst)+'-01-01T00:00:00+01:00', 
 			'timeMax': (appModel.yearLast+1)+'-01-01T00:00:00+01:00', //+1 because it is exclusive
-			'fields': 'items(colorId,start,end,summary,id),nextPageToken,updated',
+			'fields': 'items(colorId,start,end,summary,id,location,htmlLink),nextPageToken,updated',
 			'pageToken': pageToken
 			});
 		
@@ -97,6 +97,18 @@ function AskGoogle(calendarModel) {
 			});
 		
 		}// function loadEvents
+	
+	this.getEventDetails = function(k, eventId, callback) {
+		this.request = gapi.client.calendar.events.get({
+			'calendarId': calendarModel.calendars[k].id, 
+			'eventId': eventId
+			});
+		
+		this.request.execute(function(resp) {
+			console.log(eventId, "received event details: ", resp);
+			callback(resp);
+		});
+	}
 	
 	
 	
