@@ -244,6 +244,17 @@ function yearView(selected, monthColors, callback) {
 	
 if (appModel.complexity == "complex") {
 
+	// single or multiple calendars selected
+	var k = null;
+	for ( var int = 0; int < selected.length; int++) {
+		if (k != null && selected[int] == true) {
+			k = null;
+			break;
+		}
+		if (selected[int] == true) {
+			k = int;
+		}
+	}
 
 	var data1 = [];
 		if (k!=null) {	
@@ -420,7 +431,11 @@ $(".complexLabel").bind('click', function() {switchComplexity(this, event);});
 		
 }
 
-<<<<<<< HEAD
+
+
+
+
+
 
 /* ---- Controllers ---- */
 
@@ -438,9 +453,7 @@ appView.update("complexity changed");
 }
 
 
-=======
-/* ---- Controllers ---- */
->>>>>>> c25b3554de36867e9b6ccbc694a02bc410f678ac
+
 
 function yearViewUpdate() {
 	var see = 0;
