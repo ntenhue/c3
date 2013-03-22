@@ -9,6 +9,8 @@ function CalendarModel(appModel){
 	this.totalBusyHours = []; 
 	this.colors = [];
 	
+	colorspaceForEvents = ["#000000","#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];
+	
 
 
 
@@ -23,10 +25,7 @@ this.addCalendars = function (items) {
 		items.busyHours = [];
 		}
 	
-	for(var i in items) {
-		if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){
-			items.splice(i,1);	
-			}}
+	//for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
 	
 	
 	this.calendars = this.calendars.concat(items);
@@ -53,7 +52,7 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 		// if this is a last or the only page of events
 		this.calendars[k].updated= upd;
 		this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
-		this.calendars[k].events = this.updateEventColor(this.calendars[k].events);
+		this.calendars[k].events = this.fillEmptyValues(this.calendars[k]);
 		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k]);
 		appModel.setCldrStatus(k,"events added");	
 		}
@@ -207,9 +206,20 @@ this.updateEventsDuration = function (events) {
 	return events;}
 	
 	
-this.updateEventColor = function (events) {
-	for (var i in events){	if (events[i].colorId == null) events[i].colorId = 0; }
-	return events;}
+this.fillEmptyValues = function (calendar) {
+	for (var i in calendar.events){	
+		if (calendar.events[i].colorId == null) {
+			calendar.events[i].colorId = 0; 
+			calendar.events[i].color = calendar.backgroundColor; 
+			}else{
+			calendar.events[i].color = colorspaceForEvents[calendar.events[i].colorId];
+			}
+		
+	
+		
+		if (calendar.events[i].summary == null) calendar.events[i].summary = ""; 
+		}
+	return calendar.events;}
 
 
 
@@ -326,8 +336,11 @@ this.updateBusyHoursAsMap = function (calendar) {
 	var events = calendar.events;
 	
 	for (var i in events){	if (events[i].duration<24){
-		
-		
+
+		if (events[i].summary.toLowerCase().indexOf(appModel.searchString.toLowerCase()) !== -1
+	|| appModel.searchString == ""
+	) {
+
 		if (busyHours[events[i].start.date] == null) {
 			var busyHour = new Object();
 			busyHour.hours = events[i].duration;
@@ -340,7 +353,7 @@ this.updateBusyHoursAsMap = function (calendar) {
 			busyHours[events[i].start.date].hours += events[i].duration;
 			busyHours[events[i].start.date].hoursByColor[events[i].colorId] += events[i].duration;		
 		}
-		
+		}//filter
 	}}
 	
 	return busyHours;

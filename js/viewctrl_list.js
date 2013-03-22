@@ -4,7 +4,7 @@
  * 
  */
 
-function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
+function ListView(parent /*JQuery object*/, calendarModel) { 
 
 	/***************************************************************************
 	 * INITIALIZATION
@@ -75,11 +75,11 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 				var item = new this.item();
 				item.square.attr("id", i).appendTo(item.div);
 				item.div.append(" ");
-				item.label.html(calendars[i].summary).appendTo(item.div);
+				item.label.html(calendars[i].summary.substring(0,26)).appendTo(item.div);
 				item.div.append(" ");
 				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
-				item.square.on("mousedown", { index: i }, listMouseDown); // attach listener
+				item.square.on("mousedown", { index: i }, iWannaChooseCalendars); // attach listener
 				
 				this.cldrList[i] = item;
 				this.listCalendarsDiv.append(this.cldrList[i].div);
@@ -137,7 +137,7 @@ function ListView(parent /*JQuery object*/, calendarModel) { var self=this;
 }
 
 
-function listMouseDown(event) { 
+function iWannaChooseCalendars(event) { 
 	var index=event.data.index;
 	appModel.setSelectedCldrs(index, !appModel.getSelectedCldrs(index));
 
@@ -164,6 +164,78 @@ function listMouseDown(event) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+function ToolbarView(parent /*JQuery object*/, calendarModel) { 
+
+	/***************************************************************************
+	 * INITIALIZATION
+	 **************************************************************************/
+
+	this.barForm = $("<form>");
+	this.searchLine = $('<input type="text" value="filter, not search">');
+	
+	this.searchLine.bind("keyup focusin focusout", { view: this }, iWannsSearch); // attach listener
+
+
+	/***************************************************************************
+	 * ASSEMBLING THE VIEW
+	 **************************************************************************/
+ 	this.barForm.append(this.searchLine);
+	parent.append(this.barForm);
+	
+	
+}
+
+
+function iWannsSearch(event) {
+	
+	if (event.type == "focusin") {	
+		toolbarView.searchLine.attr("value","");
+	}
+
+	if (event.type == "focusout") {	
+		toolbarView.searchLine.attr("value","filter, not search");
+	}
+	
+	if (event.type == "keyup") {
+		var searchfor = event.data.view.searchLine.val(); 
+		
+		
+		
+		setTimeout(function() {
+
+		if (event.data.view.searchLine.val() == searchfor){
+		
+			console.log(searchfor);
+		appModel.searchString = searchfor;
+		for ( var k in appModel.selectedCldrs) {	
+			if (appModel.cldrStatus[k] == "updated" || appModel.cldrStatus[k] == "events added") {	
+				calendarModel.calendars[k].busyHours = calendarModel.updateBusyHours(calendarModel.calendars[k]);
+				}	
+			}
+
+		appModel.setWorkingStatus("calculating occupancy...");
+		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
+		yearViewUpdate();
+		monthViewUpdate();
+		
+		
+		
+		}}, 500);
+	}//keyup
+
+}
 
 
 

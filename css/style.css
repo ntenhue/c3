@@ -1,5 +1,8 @@
+/** { zoom: 100%; -moz-transform: scale(100%); -moz-transform-origin: 0 0}*/
+
+
 body {
-	font: 11px Tahoma;
+	font: 12px Tahoma;
 	font-family: Helvetica, Arial, Verdana;
 	color: #333333;
   shape-rendering: crispEdges;
@@ -140,7 +143,7 @@ h1{
 	padding: 1em;
 }
 #leftnav p{
-	font: 11px Tahoma;
+	font: 12px Tahoma;
 	font-family: Helvetica, Arial, Verdana;
 	color: #333333;
 }
@@ -220,15 +223,10 @@ h1{
 
 
 
-.yrlabel {
-
-cursor: pointer;
-text-decoration:underline;
-}
 
 
 .complexLabel {
-
+font: 12px Tahoma;
 cursor: pointer;
 text-decoration:underline;
 }
@@ -237,6 +235,8 @@ text-decoration:underline;
 
 .monthLabel {
 fill:black;
+font: 12px Tahoma;
+ cursor: pointer;
 text-decoration:underline;
 }
 
@@ -250,25 +250,29 @@ font: 8px Tahoma;
 }
 
 .labelGrey {
-fill:#DDDDDD;
+fill:#E5E5E5;
 font: 8px Tahoma;
-font-weight:50;
+/*font-weight:50;*/
 }
 
 .weekdayLabel {
-fill:#DDDDEE;
-font: 8px Tahoma;
-font-weight:50;
+fill:#CCCCDD;
+font: 10px Tahoma;
+/*font-weight:50;*/
 }
 
 .weeknumberLabel {
-fill:#DEDEEE;
-font: 8px Tahoma;
-font-weight:50;
+fill:#CCCCDD;
+font: 10px Tahoma;
+/*font-weight:50;*/
 }
 
 .day {
   fill: #ffffff;
+}
+
+.activeday {
+  cursor: pointer;
 }
 
 .month {
@@ -294,7 +298,7 @@ font-weight:50;
   position: absolute;
   display: block;
   text-align: center;
-  width: 430px;
+  width: 340px;
   height: auto;
   padding: 8px;
   font-family: Tahoma, Helvetica, Arial, Verdana;
@@ -309,13 +313,13 @@ font-weight:50;
 }
 
 .tooltipTable {
-	width: 430px;
-	font-size: 12px;
+	width: 300px;
+	font: 12px Tahoma;
 	text-align: left;
 }
 
 .tooltipTableRow {
-	border-bottom : 1px solid #777;
+	border-bottom : 1px solid #DEDEDE;
 }
 
 .leftTooltipColumn {

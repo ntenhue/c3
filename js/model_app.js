@@ -28,6 +28,8 @@ function AppModel() {
 	
 	this.selectedYear;
 	this.selectedMonth;
+	
+	this.searchString="";
 
 	this.selectedCldrs=[];
 	this.cldrStatus = [];

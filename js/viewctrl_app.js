@@ -61,6 +61,7 @@ function AppCtrl(appModel, appView) {
 		if (what == "library loaded") {
 			// the other necessary things are called by message, asynchronously
 			listView = new ListView($("#listhere"), calendarModel);
+			toolbarView = new ToolbarView($("#toolbarhere"), calendarModel);
 			askGoogle = new AskGoogle(calendarModel);			
 			askGoogle.loadCalendars();
 			}	

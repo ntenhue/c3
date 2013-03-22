@@ -1,5 +1,5 @@
 var tooltip;
-function yearView(selected, monthColors, callback) {
+function yearView(selected, colorspace, callback) {
 	
 	$("#yearViewCanvas").empty();
 	
@@ -10,10 +10,11 @@ function yearView(selected, monthColors, callback) {
 	year = d3.time.format("%Y"),
 	format = d3.time.format("%Y-%m-%d");
 	
-	var color = d3.scale.quantize() 
+	var heatmap = d3.scale.quantize() 
 		.domain([ 0.0, appModel.strongestColorForHours]) 
 		.range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
 	
+
 	var svg = d3.select("#yearViewCanvas").selectAll("svg")
 		.data([ appModel.yearFirst , appModel.yearLast])
 		.enter().append("svg")
@@ -98,7 +99,7 @@ function yearView(selected, monthColors, callback) {
 		}) 
 		.style("text-anchor", "middle")
 		.attr("transform", "translate(-11,12)")
-		.text( function(d) { return d3.time.format("%a")(d); });
+		.text( function(d) { return d3.time.format("%a")(d).substring(0,2); });
 		
 	var weeknumberLabel = svg.selectAll(".weeknumberLabel")
 		.data(function(d) { return d3.time.weeks( new Date(d,0,1), new Date(d+1,0,1) ).concat([new Date(d+1,0,0)]); })
@@ -144,14 +145,23 @@ function yearView(selected, monthColors, callback) {
 	
 	
 	
-	
-	
-	
-	
+	var colorspace1 = colorspace;
+	if (appModel.complexity == "complex") {
 
+	// single or multiple calendars selected
+	var k = null;
+	for ( var int = 0; int < selected.length; int++) {
+		if (k != null && selected[int] == true) {k = null;	break;	}
+		if (selected[int] == true) {	k = int; }
+		}
+
+		if (k!=null) {	
+		colorspace1 = [colorspace[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];
+		
+		}
+	}
 	
-	
-	
+	var color = d3.scale.ordinal().range(colorspace1);
 	
 	
 	
@@ -232,9 +242,10 @@ function yearView(selected, monthColors, callback) {
 	if (appModel.complexity == "simple") {
 	
 		rect.filter(function(d) { return d in data;}) 
-			.attr("class", function(d) { return "day " + color(data[d]);})
+			.attr("class", function(d) { return "day activeday " + heatmap(data[d]);})
 			.attr("busyHours",function(d){ return data[d]; })
 			.attr("date",function(d){ return d; } )
+			.attr("id", function(d){return d;})
 			.append("svg:title")
 			.text(function(d){ return data[d] + " hours of events." });
 
@@ -244,27 +255,12 @@ function yearView(selected, monthColors, callback) {
 	
 if (appModel.complexity == "complex") {
 
-	// single or multiple calendars selected
-	var k = null;
-	for ( var int = 0; int < selected.length; int++) {
-		if (k != null && selected[int] == true) {
-			k = null;
-			break;
-		}
-		if (selected[int] == true) {
-			k = int;
-		}
-	}
 
 	var data1 = [];
 		if (k!=null) {	
 			data1 = $.extend(true, [], calendarModel.calendars[k].busyHours);
-			var color1 = d3.scale.ordinal()
-								.range([monthColors[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd",    "#00b050", "#c00000"]);
 		} else {
 			data1 = $.extend(true, [], calendarModel.totalBusyHours);		
-			var color1 = d3.scale.ordinal()
-								.range(monthColors);
 		}
 
 		   
@@ -285,14 +281,14 @@ if (appModel.complexity == "complex") {
 
 	//Sets color domain names to names of properties from data[0]
 	//"date", "hours", "hoursByColor" are omitted
-	color1.domain( d3.keys(data1[0]).filter( function(key) {
+	color.domain( d3.keys(data1[0]).filter( function(key) {
 		if(key !== "date" && key !== "hours" && key !== "hoursByColor"){return key;}
 		}));
 		  
 	data1.forEach(function(d) {
 		var x0 = 0;
 		var x1 = 0;
-		d.events = color1.domain().map(function(name) {
+		d.events = color.domain().map(function(name) {
 			return {name: name, x0: x0, x1: x0 += Math.ceil(+d[name]/d.hours*cellSize)}; 
 			});
 		});
@@ -309,7 +305,9 @@ if (appModel.complexity == "complex") {
 		.filter( function(d) {
 			return new Date(Date.parse(d.date)).getFullYear() == svg[0][int].id.substring(4);
 		})
-		.attr("date", function(d){return d.date;})
+		
+		.attr("class", "day activeday")
+		.attr("id", function(d){return d.date;})
 		.attr("transform", function(d){
 			var xshift=0;
 			var yshift=0;
@@ -341,7 +339,7 @@ if (appModel.complexity == "complex") {
 		.attr("height", cellSize)
 		.attr("x", function(d) { return x(1-d.x0); })
 		.attr("width", function(d) { return x(d.x0) - x(d.x1); })
-		.style("fill", function(d) { return color1(d.name); });
+		.style("fill", function(d) { return color(d.name); });
 	}
 	
 	
@@ -391,20 +389,20 @@ d3.select(svg[0][0]).append("text")
 		$(table).addClass("tooltipTable");
 	}
 	
-	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, selected, monthColors);});
-	$(".day").bind('mouseenter mouseout click', function() {
+	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, selected, colorspace);});
+	$(".activeday").bind('mouseenter mouseout click', function() {
 		if (event.type == "click") {
 		
 		var allEventsForTheDay = [];
 		for ( var s = 0; s < selected.length; s++) {
 			if (selected[s] == true && (appModel.cldrStatus[s] == "updated" || appModel.cldrStatus[s] == "events added")) {
-				var events = calendarModel.getEventsInRange(calendarModel.getEvents(s), this.__data__);
+				var events = calendarModel.getEventsInRange(calendarModel.getEvents(s), this.id /*__data__*/);
 				// add color information
 				var wrappers = [];
 				for ( var int = 0; int < events.length; int++) {
 					var wrapper = new Object();
 					wrapper.data = events[int];
-					wrapper.color = calendarModel.colors[s];
+					wrapper.color = k==null? colorspace[s] : events[int].color;
 					wrappers.push(wrapper);
 				}
 				allEventsForTheDay = allEventsForTheDay.concat(wrappers);
@@ -461,7 +459,6 @@ appView.update("complexity changed");
 
 
 function yearViewUpdate() {
-	var see = 0;
 	appModel.setWorkingStatus("updating year view...");
 	yearView(appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
 
@@ -474,22 +471,21 @@ function yearViewUpdate() {
  * event: event type
  * k: ?
  * selected: the array is selected calendars
- * monthColors: the array of available colors for months
+ * colorspace: the array of available colors for months
  */
-function monthLabelController(monthLabel, event, selected, monthColors) {
+function monthLabelController(monthLabel, event, selected, colorspace) {
 	if (event.type == "mouseover") {		
-		$(monthLabel).css("cursor", "pointer");
-		$(monthLabel).css("fill","#559393");
+		$(monthLabel).css("fill","#FF0000");
 	} else if (event.type == "mouseout") {
 		$(monthLabel).css("fill","");
 	} else if (event.type == "click") {
-		$(monthLabel).css("fill","#559393");
+		$(monthLabel).css("fill","#FF0000");
 		appModel.selectedYear=+monthLabel.attributes.yearNumber.value;
 		appModel.selectedMonth=+monthLabel.attributes.monthNumber.value;
 		monthView = new MonthView(selected,
 			+monthLabel.attributes.yearNumber.value,
 			+monthLabel.attributes.monthNumber.value,
-			monthColors,
+			colorspace,
 		function(){});
 	}
 }
@@ -527,11 +523,14 @@ function buildTooltipHTML(wrappers, tooltip) {
 		var data1 = row.insertCell(0);
 		$(data1).addClass("leftTooltipColumn");
 
-		var a = document.createElement('a');
-		a.href = event.htmlLink;
-		var text = document.createTextNode(event.summary);
-		a.appendChild(text);
-		data1.appendChild(a);
+		
+		var link = document.createElement('a');
+		$(link).attr("target", "_blank")
+				.attr("href", event.htmlLink)
+				.text(event.summary==""? "(no title)":event.summary);
+		data1.appendChild(link);
+		
+
 		data1.style.color = wrappers[i].color;
 		var data2 = row.insertCell(1);
 		$(data2).addClass("rightTooltipColumn");

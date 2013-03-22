@@ -139,7 +139,7 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 			
 
 	if (k!=null){	// set the Legend
-		
+/*
 		var legend = svg.selectAll(".legend")
 			.data(color.domain().slice().reverse())
 			.enter().append("g")
@@ -159,7 +159,8 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 			.attr("dy", ".35em")
 			.style("text-anchor", "start")
 			.text(function(d) { return d; });
-				  
+*/	  
+		
 		var legendComment = svg.append("g")
 			.append("text")
 			.attr("x", width)
