@@ -1,4 +1,5 @@
-function yearView(k, selected,monthColors, callback) {
+var tooltip;
+function yearView(selected, monthColors, callback) {
 	
 	$("#yearViewCanvas").empty();
 	
@@ -367,8 +368,49 @@ d3.select(svg[0][0]).append("text")
 
 
 	
-	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, k, selected, monthColors);});
-	$(".day").bind('mouseenter mouseout', function() {dayController(this, event);});
+	// tooltip
+	if (tooltip == null) {		
+		tooltip = d3.select("body")
+		.append("div")
+		.attr("class", "tooltip")
+		.html(TOOLTIP_TABLE_HTML);
+		
+		// apply close button
+		var table = document.getElementById("tooltiptable");
+		$(table).addClass("tooltipTable");
+	}
+	
+	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, selected, monthColors);});
+	$(".day").bind('mouseenter mouseout click', function() {
+		var allEventsForTheDay = [];
+		for ( var s = 0; s < selected.length; s++) {
+			if (selected[s] == true) {
+				var events = calendarModel.getEventsInRange(calendarModel.getEvents(s), this.__data__);
+				// add color information
+				var wrappers = [];
+				for ( var int = 0; int < events.length; int++) {
+					var wrapper = new Object();
+					wrapper.data = events[int];
+					wrapper.color = calendarModel.colors[s];
+					wrappers.push(wrapper);
+				}
+				allEventsForTheDay = allEventsForTheDay.concat(wrappers);
+			}
+		}
+		allEventsForTheDay.sort(function(a, b){
+			if (a.data.start.dateTime == null) {
+				return 1;
+			} else if (b.data.start.dateTime == null) {
+				return -1;
+			}
+			var date1 = new Date(a.data.start.dateTime);
+			var date2 = new Date(b.data.start.dateTime);
+			return date1 < date2 ? -1 : 1;
+			
+		});
+		return dayController(this, allEventsForTheDay, event, tooltip);
+	});
+	
 	callback();
 
 	
@@ -378,6 +420,7 @@ $(".complexLabel").bind('click', function() {switchComplexity(this, event);});
 		
 }
 
+<<<<<<< HEAD
 
 /* ---- Controllers ---- */
 
@@ -395,16 +438,14 @@ appView.update("complexity changed");
 }
 
 
-
+=======
+/* ---- Controllers ---- */
+>>>>>>> c25b3554de36867e9b6ccbc694a02bc410f678ac
 
 function yearViewUpdate() {
 	var see = 0;
-	var k;
-	for (var i in appModel.selectedCldrs) {	if (appModel.selectedCldrs[i]) {see++; k = i;}	}
-	if(see>1)k=null;
-	
 	appModel.setWorkingStatus("updating year view...");
-	yearView(k, appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
+	yearView(appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
 
 }
 
@@ -417,7 +458,7 @@ function yearViewUpdate() {
  * selected: the array is selected calendars
  * monthColors: the array of available colors for months
  */
-function monthLabelController(monthLabel, event, k, selected, monthColors) {
+function monthLabelController(monthLabel, event, selected, monthColors) {
 	if (event.type == "mouseover") {		
 		$(monthLabel).css("cursor", "pointer");
 		$(monthLabel).css("fill","#559393");
@@ -427,7 +468,7 @@ function monthLabelController(monthLabel, event, k, selected, monthColors) {
 		$(monthLabel).css("fill","#559393");
 		appModel.selectedYear=+monthLabel.attributes.yearNumber.value;
 		appModel.selectedMonth=+monthLabel.attributes.monthNumber.value;
-		monthView = new MonthView(k, selected,
+		monthView = new MonthView(selected,
 			+monthLabel.attributes.yearNumber.value,
 			+monthLabel.attributes.monthNumber.value,
 			monthColors,
@@ -435,10 +476,66 @@ function monthLabelController(monthLabel, event, k, selected, monthColors) {
 	}
 }
 
-function dayController(day, event) {
-	if (event.type == "mouseover") {		
+function dayController(day, events, mouseEvent, tooltip) {
+	
+	if (mouseEvent.type == "mouseover") {
 		$(day).css('stroke','#444444');
-	} else if (event.type == "mouseout") {
+	} else if (mouseEvent.type == "mouseout") {
 		$(day).css('stroke',"");
+	} else if (mouseEvent.type == "click" && events != null && events.length  > 0) {
+		// add tooltip
+		tooltip.transition()        
+			.duration(500)      
+			.style("visibility", "visible");      
+		tooltip.style("left", (mouseEvent.pageX) + "px")
+			.style("top", (mouseEvent.pageY - 28) + "px");  
+		buildTooltipHTML(events, tooltip);
 	}
 }
+
+function closeTooltip() {
+	tooltip.transition()        
+		.duration(500)  
+		.style("visibility", "hidden");
+}
+
+function buildTooltipHTML(wrappers, tooltip) {
+	var table = document.getElementById("tooltiptable");
+	var tbody = document.createElement('tbody');
+	for ( var i = 0; i < wrappers.length; i++) {
+		var event = wrappers[i].data;
+		var row = tbody.insertRow(i);
+		$(row).addClass("tooltipTableRow");
+		var data1 = row.insertCell(0);
+		$(data1).addClass("leftTooltipColumn");
+		var img = document.createElement("img");
+		img.src = "img/tooltip_img.png";
+		data1.appendChild(img);
+		var a = document.createElement('a');
+		a.href = event.htmlLink;
+		var text = document.createTextNode(event.summary);
+		a.appendChild(text);
+		data1.appendChild(a);
+		data1.style.color = wrappers[i].color;
+		var data2 = row.insertCell(1);
+		$(data2).addClass("rightTooltipColumn");
+		if (event.start != null && event.end != null) {			
+			data2.appendChild (document.createTextNode(event.start.time + " - " + event.end.time))
+		}
+		data2.style.color = wrappers[i].color;
+	}
+	table.tBodies[0].parentNode.replaceChild(tbody, table.tBodies[0]);
+	if ($('#img_close_box').length == 0) {		
+		var a = document.createElement('a');
+		var img = document.createElement("img");
+		img.src = "img/tooltip_img.png";
+		a.appendChild(img);
+		a.id = "img_close_box";
+		a.href = "javascript:closeTooltip()";
+		$(a).addClass("tooltipCloseButton");
+		$(table).append(a);
+		tooltip.html(table.outerHTML);
+	}
+    
+}
+

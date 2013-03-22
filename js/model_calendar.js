@@ -54,7 +54,7 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 		this.calendars[k].updated= upd;
 		this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
 		this.calendars[k].events = this.updateEventColor(this.calendars[k].events);
-		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k].events);
+		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k]);
 		appModel.setCldrStatus(k,"events added");	
 		}
 	}	
@@ -84,9 +84,9 @@ this.clearEvents = function (k) {
  * GETTERS
  **************************************************************************/
 this.getCalendars = function () { return this.calendars;	        }
-this.getEvents = function (k) 	{ return this.calendars[k].events;	}	
+this.getEvents = function (k) 	{ return k != null ? this.calendars[k].events : null;	}	
 this.getTotalBusyHours = function () { return this.totalBusyHours;	        }
-this.getBusyHours = function (k) { return this.calendars[k].busyHours;	        }
+this.getBusyHours = function (k) { return k != null ? this.calendars[k].busyHours : null;	        }
 
 
 
@@ -138,6 +138,11 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 	// all march: ("2013-03")
 	// all 2013:  ("2013")
 	
+	// defensive coding
+	if (events == null) {
+		return null;
+	}
+	
 	if (tillAsked == null) tillAsked=fromAsked;
 	var result=[];
 	
@@ -155,7 +160,7 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 	if (tillAsked.length>=9) till.d = tillAsked.substring(8,10);
 							 till.date = new Date(till.y,till.m-1,till.d);
 		
-	for (var i in this.events){
+	for (var i in events){
 		var eventDateStart = new Date (events[i].start.date.substring(0,4),
 									   events[i].start.date.substring(5,7)-1,
 									   events[i].start.date.substring(8,10));
@@ -176,15 +181,6 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
  */	
 this.updateEventsDuration = function (events) {
 
-	// parse a date based on a dateDay field (e.g. 2011-09-03) and a dateTime field (e.g. 09:30)
-	var parseDate = function (dateDay, dateTime) {
-		var dateDay = dateDay.split('-');
-		var dateTime = dateTime.split(':');
-		var fullDate = dateDay.concat(dateTime).map( function( num ) { return parseInt( num, 10 ) } );
-	 
-		return new Date(fullDate.shift(), fullDate.shift(), fullDate.shift(), fullDate.shift(), fullDate.shift());
-		};
-	 
 	// calculate the difference between two dates in hours
 	var dateDiff = function (startDate, endDate){
 		var diff = endDate - startDate;
@@ -200,12 +196,12 @@ this.updateEventsDuration = function (events) {
 			events[i].end.date = events[i].end.dateTime.substring(0,10);
 			events[i].end.time = events[i].end.dateTime.substring(11,16);
 			
-			events[i].duration=dateDiff(parseDate(events[i].start.date,events[i].start.time), 
-									 		 parseDate(events[i].end.date,events[i].end.time));
+			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + ", " + events[i].start.time)), 
+					new Date(Date.parse(events[i].end.date + ", " + events[i].end.time)));
 		} else {
 			// this is a whole-day event
-			events[i].duration=dateDiff(parseDate(events[i].start.date,"00:00"), 
-			 		 						 parseDate(events[i].end.date,"00:00")); 
+			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + ", 00:00")), 
+					new Date(Date.parse(events[i].end.date + ", 00:00"))); 
 		}
 	}
 	return events;}
@@ -231,71 +227,26 @@ this.updateTotalBusyHours = function (calendars, selected) {
 	
 	var ttlbzyhrs = [];
 	
-	
-//	ttlbzyhrs.push({'date':'date', 'hours':'hours', 'hoursByColor':[] });
-	
-	var pushNeeded=true;
-	
-	for (var k in calendars){ if (selected[k]){
-		
-//		ttlbzyhrs[0].hoursByColor[k]=calendars[k].summary;
-		
-		for (var i in calendars[k].busyHours){
-			
-			for (var j in ttlbzyhrs){
-				if (calendars[k].busyHours[i].date == ttlbzyhrs[j].date) {
-					
-					
-					ttlbzyhrs[j].hours += calendars[k].busyHours[i].hours
-					
-					//if (appModel.colorMonth=="byCalendars"){
-					
-						ttlbzyhrs[j].hoursByColor[k] += calendars[k].busyHours[i].hours;
-					//}
-					
-					/*
-					if (appModel.colorMonth=="byEvents"){
-						
-					
-						for (var l in ttlbzyhrs[j].hoursByColor){
-							ttlbzyhrs[j].hoursByColor[l] += calendars[k].busyHours[i].hoursByColor[l];
-						}
-					}*/
-					
-					pushNeeded = false;
-					break;
-					
-					} else {
-	
-					if (j==ttlbzyhrs.length-1)pushNeeded = true;
-	
-					}
+	for ( var int = 0; int < calendars.length; int++) {
+		if (!selected[int]) {
+			continue;
+		}
+		var busyHours = this.updateBusyHoursAsMap(calendars[int]);
+		for ( var int2 = 0; int2 < Object.keys(busyHours).length; int2++) {
+			var key = Object.keys(busyHours)[int2];
+			if (ttlbzyhrs[key] == null) {
+				ttlbzyhrs[key] = busyHours[key];
+			} else {
+				ttlbzyhrs[key].hours += busyHours[key].hours;
+				for ( var int3 = 0; int3 < Object.keys(ttlbzyhrs[key].hoursByColor).length; int3++) {
+					var colorKey = Object.keys(ttlbzyhrs[key].hoursByColor)[int3];
+					ttlbzyhrs[key].hoursByColor[colorKey] += busyHours[key].hoursByColor[colorKey];
 				}
-			
-			if (pushNeeded) {
-				ttlbzyhrs.push({'date':'', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] });
-				
-				ttlbzyhrs[ttlbzyhrs.length-1].date = calendars[k].busyHours[i].date;
-				ttlbzyhrs[ttlbzyhrs.length-1].hours = calendars[k].busyHours[i].hours;
-				
-				//if (appModel.colorMonth=="byCalendars"){
-					
-					ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[k] = calendars[k].busyHours[i].hours;
-				//}
-				
-				/*
-				if (appModel.colorMonth=="byEvents"){
-					
-					for (var l in ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor){
-					ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[l] = calendars[k].busyHours[i].hoursByColor[l];
-					}
-				}*/
-				
-				}
-			
-		}}}
+			}
+		}
+	}
 	
-	return ttlbzyhrs;
+	return this.convertBusyHoursMapToArray(ttlbzyhrs);;
 	
 }
 
@@ -310,57 +261,46 @@ this.updateTotalBusyHours = function (calendars, selected) {
  * [{'date':'yyyy-mm-dd', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] }, ... ]
  * 
  */
-this.updateBusyHours = function (events) {
+this.updateBusyHours = function (calendar) {
 	
+	return this.convertBusyHoursMapToArray(this.updateBusyHoursAsMap(calendar));
+}
+
+this.updateBusyHoursAsMap = function (calendar) {
 	var busyHours = [];
-/*	busyHours.push({'date':'date', 'hours':'hours', 'hoursByColor':['default',
-									                'light-blue',
-									                'light-green',
-									                'violet',
-									                'light-red',
-									                'gold',
-									                'orange',
-									                'turquoise',
-									                'grey',
-									                'blue',
-									                'green',
-									                'red'] });
-	*/
-	var pushNeeded=true;
+	var events = calendar.events;
 	
 	for (var i in events){	if (events[i].duration<24){
 		
-		for (var j in busyHours){
-			if (events[i].start.date == busyHours[j].date) {
-				
-				
-				busyHours[j].hours += events[i].duration;
-				busyHours[j].hoursByColor[events[i].colorId] += events[i].duration;
-				
-				pushNeeded = false;
-				break;
-				
-				} else {
-
-				if (j==busyHours.length-1)	pushNeeded = true;
-
-				}
-			}
 		
-		if (pushNeeded) {
-			busyHours.push({'date':' ', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] });
-			
-			busyHours[busyHours.length-1].date = events[i].start.date;
-			busyHours[busyHours.length-1].hours = events[i].duration;
-			busyHours[busyHours.length-1].hoursByColor[events[i].colorId] = events[i].duration;
-			
-			}
+		if (busyHours[events[i].start.date] == null) {
+			var busyHour = new Object();
+			busyHour.hours = events[i].duration;
+			var hoursByColor=[0,0,0,0,0,0,0,0,0,0,0,0];
+			busyHour.hoursByColor = hoursByColor;
+			busyHour.hoursByColor[events[i].colorId] = events[i].duration;
+			busyHour.date = events[i].start.date;
+			busyHours[events[i].start.date] = busyHour;
+		} else {
+			busyHours[events[i].start.date].hours += events[i].duration;
+			busyHours[events[i].start.date].hoursByColor[events[i].colorId] += events[i].duration;		
+		}
 		
 	}}
 	
-	
 	return busyHours;
+}
+
+
+this.convertBusyHoursMapToArray = function(busyHoursMap) {
+	var busyHoursArray = [];
 	
+	for ( var int = 0; int < Object.keys(busyHoursMap).length; int++) {
+		var key = Object.keys(busyHoursMap)[int];
+		busyHoursArray.push(busyHoursMap[key]);
+	}
+	
+	return busyHoursArray;
 }
 	
 /*****************************************  
