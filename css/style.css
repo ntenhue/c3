@@ -287,22 +287,25 @@ font-weight:50;
   width: 430px;
   height: auto;
   padding: 8px;
-  font-family: sans-serif;
+  font-family: Tahoma, Helvetica, Arial, Verdana;
   font-size: 0;
   background: #FFFFFF;
   border: solid 1px #aaa;
   visibility: hidden;
   word-spacing: -1;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .tooltipTable {
 	width: 430px;
-	font-size: 20px;
+	font-size: 12px;
 	text-align: left;
 }
 
 .tooltipTableRow {
-	border-bottom : 1px solid #000000;
+	border-bottom : 1px solid #777;
 }
 
 .leftTooltipColumn {
@@ -320,4 +323,14 @@ font-weight:50;
 	position: absolute;
     top: 10px;
     right: 20px;
+}
+
+a:link {
+	text-decoration: none;
+	color: #666666;
+	text-decoration: none;
+	margin-left: 3px;
+}
+a:hover {
+  color: #fda363;
 }

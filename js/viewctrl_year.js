@@ -214,7 +214,7 @@ function yearView(selected, monthColors, callback) {
 			.attr("busyHours",function(d){ return data[d]; })
 			.attr("date",function(d){ return d; } )
 			.append("svg:title")
-			.text(function(d){ return data[d] + " hours of events on the day." });
+			.text(function(d){ return data[d] + " hours of events." });
 
 
 	
@@ -335,9 +335,7 @@ function buildTooltipHTML(wrappers, tooltip) {
 		$(row).addClass("tooltipTableRow");
 		var data1 = row.insertCell(0);
 		$(data1).addClass("leftTooltipColumn");
-		var img = document.createElement("img");
-		img.src = "img/tooltip_img.png";
-		data1.appendChild(img);
+
 		var a = document.createElement('a');
 		a.href = event.htmlLink;
 		var text = document.createTextNode(event.summary);
