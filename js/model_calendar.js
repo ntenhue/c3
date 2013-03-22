@@ -22,6 +22,13 @@ this.addCalendars = function (items) {
 		items.updated = "";
 		items.busyHours = [];
 		}
+	/*
+	for(var i in items) {
+		if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){
+			items.splice(i,1);	
+			}}
+	*/
+	
 	this.calendars = this.calendars.concat(items);
 	this.calendars = this.sortCalendars(this.calendars);
 	
@@ -216,6 +223,7 @@ this.updateEventColor = function (events) {
  * [{'date':'yyyy-mm-dd', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] }, ... ]
  * 
  */
+/*
 this.updateTotalBusyHours = function (calendars, selected) {
 	
 	var ttlbzyhrs = [];
@@ -241,6 +249,60 @@ this.updateTotalBusyHours = function (calendars, selected) {
 	
 	return this.convertBusyHoursMapToArray(ttlbzyhrs);;
 	
+}
+
+*/
+
+
+this.updateTotalBusyHours = function (calendars, selected) {
+
+	var ttlbzyhrs = [];
+
+
+//	ttlbzyhrs.push({'date':'date', 'hours':'hours', 'hoursByColor':[] });
+
+	var pushNeeded=true;
+
+	for (var k in calendars){ if (selected[k]){
+
+//		ttlbzyhrs[0].hoursByColor[k]=calendars[k].summary;
+
+		for (var i in calendars[k].busyHours){
+
+			for (var j in ttlbzyhrs){
+				if (calendars[k].busyHours[i].date == ttlbzyhrs[j].date) {
+
+
+					ttlbzyhrs[j].hours += calendars[k].busyHours[i].hours
+
+						ttlbzyhrs[j].hoursByColor[k] += calendars[k].busyHours[i].hours;
+
+					pushNeeded = false;
+					break;
+
+					} else {
+
+					if (j==ttlbzyhrs.length-1)pushNeeded = true;
+
+					}
+				}
+
+			if (pushNeeded) {
+				ttlbzyhrs.push({'date':'', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] });
+
+				ttlbzyhrs[ttlbzyhrs.length-1].date = calendars[k].busyHours[i].date;
+				ttlbzyhrs[ttlbzyhrs.length-1].hours = calendars[k].busyHours[i].hours;
+
+
+					ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[k] = calendars[k].busyHours[i].hours;
+
+
+				}
+
+		}}}
+
+	return ttlbzyhrs;
+
 }
 
 

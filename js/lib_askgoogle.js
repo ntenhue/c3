@@ -98,6 +98,13 @@ function AskGoogle(calendarModel) {
 		
 		}// function loadEvents
 	
+	
+	/*
+	 * getEventDetails
+	 * function calls Google and asks for specific event
+	 * in specific calendar
+	 * 
+	 */	
 	this.getEventDetails = function(k, eventId, callback) {
 		this.request = gapi.client.calendar.events.get({
 			'calendarId': calendarModel.calendars[k].id, 

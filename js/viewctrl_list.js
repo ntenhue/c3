@@ -146,6 +146,7 @@ function listMouseDown(event) {
 		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
 		yearViewUpdate();
 		monthViewUpdate();
+		legendView("#legendhere");
 	}
 	
 
@@ -161,3 +162,8 @@ function listMouseDown(event) {
 			}
 		}//for
 }
+
+
+
+
+

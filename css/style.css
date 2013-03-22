@@ -220,8 +220,18 @@ h1{
 
 
 
+.yrlabel {
+
+cursor: pointer;
+text-decoration:underline;
+}
 
 
+.complexLabel {
+
+cursor: pointer;
+text-decoration:underline;
+}
 
 
 

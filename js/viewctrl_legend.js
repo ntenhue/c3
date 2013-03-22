@@ -30,7 +30,7 @@ function legendView(parent) {
 		5 : [ "", "rgb(253,141,60)" ],
 		6 : [ "", "rgb(252,78,42)" ],
 		7 : [ "", "rgb(227,26,28)" ],
-		8 : [ "10+ hours", "rgb(177,0,38)" ],
+		8 : [ appModel.strongestColorForHours+"+ hours", "rgb(177,0,38)" ],
 		9 : [ "", "rgb(137,0,27)" ],
 		10 : [ "", "rgb(73,0,12)" ],
 	}

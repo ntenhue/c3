@@ -17,31 +17,23 @@ function AppView(parent, appModel) {
 appModel.addObserver(this);	
 this.update = function(what) {
 
-	if (what == "calendars loaded") {
-
-		}
-	
-	
-	if (what == "events added") {		
+	if (what == "complexity changed" ) {		
 		appModel.setWorkingStatus("calculating occupancy...");
 		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
 		yearViewUpdate();
 		monthViewUpdate();
+		legendView("#legendhere");
 		}
 	
-	/*
-	if (what == "updated") {
-		for ( var k in appModel.cldrStatus) {
-			if(appModel.getCldrStatus(k) == "checking...") return false;
-			}
-		
+	
+	if (what == "events added" ) {		
 		appModel.setWorkingStatus("calculating occupancy...");
 		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
-
 		yearViewUpdate();
 		monthViewUpdate();
+		legendView("#legendhere");
 		}
-	*/
+
 	
 	}//update
 }
