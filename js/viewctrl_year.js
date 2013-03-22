@@ -501,8 +501,8 @@ function dayController(day, events, mouseEvent, tooltip) {
 		tooltip.transition()        
 			.duration(500)      
 			.style("visibility", "visible");      
-		tooltip.style("left", (mouseEvent.pageX) + "px")
-			.style("top", (mouseEvent.pageY - 28) + "px");  
+		tooltip.style("left", (mouseEvent.pageX>800? mouseEvent.pageX-300:mouseEvent.pageX) + "px")
+			.style("top", (mouseEvent.pageY - 0) + "px");  
 		buildTooltipHTML(events, tooltip);
 	}
 }

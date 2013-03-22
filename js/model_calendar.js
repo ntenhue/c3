@@ -25,7 +25,7 @@ this.addCalendars = function (items) {
 		items.busyHours = [];
 		}
 	
-	//for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
+	for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
 	
 	
 	this.calendars = this.calendars.concat(items);
