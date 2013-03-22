@@ -68,7 +68,6 @@ function AppCtrl(appModel, appView) {
 		
 		if (what == "calendars loaded") {
 			for ( var k in appModel.selectedCldrs) {
-				appModel.setSelectedCldrs(k,true);
 				appModel.setWorkingStatus("loading...");
 				askGoogle.checkUpdatesAndLoad(k);
 				}//for

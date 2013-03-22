@@ -189,7 +189,7 @@ function monthViewUpdate(){
 									  function(){appModel.setWorkingStatus("");	});
 		}else{ 
 		// slow call, not necessary
-		//$("#monthViewCanvas").empty();
+		$("#monthViewCanvas").empty();
 		}
 	
 }
