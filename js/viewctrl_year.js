@@ -2,7 +2,7 @@ function yearView(k, selected,monthColors, callback) {
 	
 	$("#yearViewCanvas").empty();
 	
-	var width = 970, height = 166, cellSize = 17; 
+	var width = 970, height = 186, cellSize = 17; 
 	var day = d3.time.format("%w"), 
 	week = d3.time.format("%U"), 
 	weekSun = d3.time.format("%W"),
@@ -10,11 +10,11 @@ function yearView(k, selected,monthColors, callback) {
 	format = d3.time.format("%Y-%m-%d");
 	
 	var color = d3.scale.quantize() 
-		.domain([ 0.0, 12.0 ]) 
+		.domain([ 0.0, appModel.strongestColorForHours]) 
 		.range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
 	
 	var svg = d3.select("#yearViewCanvas").selectAll("svg")
-		.data([ appModel.yearFirst, appModel.yearLast ])
+		.data([ appModel.yearFirst , appModel.yearLast])
 		.enter().append("svg")
 		.attr("width", width)
 		.attr("height", height)
@@ -23,7 +23,7 @@ function yearView(k, selected,monthColors, callback) {
 		.attr( "transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")")
 		.attr("id", function(d) { return "year" + d; }); 
 	
-	svg.append("text")
+	var yearLabel = svg.append("text")
 		.attr("transform" , "translate(-25," + cellSize * 3.5 + ")rotate(-90)")
 		.style("text-anchor", "middle")
 		.text(function(d) {return d;});
@@ -117,8 +117,11 @@ function yearView(k, selected,monthColors, callback) {
 		.attr("transform", "translate(-10.5,-3)")
 		.text("Week");
 
+	
 	var rect = svg.selectAll(".day")
-		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+		.data(function(d) { 
+			return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); 
+			})
 		.enter().append("rect") 
 		.attr("class", "day")
 		.attr("width", cellSize)
@@ -135,6 +138,23 @@ function yearView(k, selected,monthColors, callback) {
 					}
 				}) 
 		.datum(format);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
 	
 	var monthPath = svg.selectAll(".month")
 		.data(function(d) {	return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -208,6 +228,8 @@ function yearView(k, selected,monthColors, callback) {
 		.rollup(function(d) { return d[0].hours; }) 
 		.map(calendarModel.totalBusyHours); 
 
+	if (appModel.complexity == "simple") {
+	
 		rect.filter(function(d) { return d in data;}) 
 			.attr("class", function(d) { return "day " + color(data[d]);})
 			.attr("busyHours",function(d){ return data[d]; })
@@ -215,20 +237,201 @@ function yearView(k, selected,monthColors, callback) {
 			.append("svg:title")
 			.text(function(d){ return data[d] + " hours of events on the day." });
 
+	};
+
+	
+	
+if (appModel.complexity == "complex") {
+
+
+	var data1 = [];
+		if (k!=null) {	
+			data1 = $.extend(true, [], calendarModel.calendars[k].busyHours);
+			var color1 = d3.scale.ordinal()
+								.range([monthColors[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd",    "#00b050", "#c00000"]);
+		} else {
+			data1 = $.extend(true, [], calendarModel.totalBusyHours);		
+			var color1 = d3.scale.ordinal()
+								.range(monthColors);
+		}
+
+		   
+	data1.forEach(function(d) {
+	    d.MAIN 			= d.hoursByColor[0];
+	    d.Lightblue 	= d.hoursByColor[1];
+	    d.Lightgreen 	= d.hoursByColor[2];
+	    d.Violet 		= d.hoursByColor[3];
+	    d.Lightred 		= d.hoursByColor[4];
+	    d.Gold 			= d.hoursByColor[5];
+	    d.Orange 		= d.hoursByColor[6];
+	    d.Turquoise 	= d.hoursByColor[7];
+	    d.Grey 			= d.hoursByColor[8];
+	    d.Blue 			= d.hoursByColor[9];
+	    d.Green 		= d.hoursByColor[10];
+	    d.Red 			= d.hoursByColor[11];
+	    });
+
+	//Sets color domain names to names of properties from data[0]
+	//"date", "hours", "hoursByColor" are omitted
+	color1.domain( d3.keys(data1[0]).filter( function(key) {
+		if(key !== "date" && key !== "hours" && key !== "hoursByColor"){return key;}
+		}));
+		  
+	data1.forEach(function(d) {
+		var x0 = 0;
+		var x1 = 0;
+		d.events = color1.domain().map(function(name) {
+			return {name: name, x0: x0, x1: x0 += Math.ceil(+d[name]/d.hours*cellSize)}; 
+			});
+		});
+
+	
+
+	var x = d3.scale.linear().rangeRound([cellSize, 0]).domain([0, cellSize]);
+	  
+	for ( var int = 0; int < svg[0].length; int++) {
+		var block =d3.select('#' + svg[0][int].id).selectAll(".block")
+		.data(data1)
+		.enter()
+		.append("g")
+		.filter( function(d) {
+			return new Date(Date.parse(d.date)).getFullYear() == svg[0][int].id.substring(4);
+		})
+		.attr("date", function(d){return d.date;})
+		.attr("transform", function(d){
+			var xshift=0;
+			var yshift=0;
+			
+			ye=d.date.substring(0,4);
+			mo=d.date.substring(5,7);
+			da=d.date.substring(8,10);
+			
+			temp = d3.time.days(new Date(ye, mo-1, da), new Date(ye, mo-1, +da+1))[0];
+			
+			xshift = (weekSun(temp)-1) * cellSize;
+			
+			if (day(temp) == 0) {	
+				yshift = 6 * cellSize;
+			} else if (day(temp) > 0) {
+				yshift = (day(temp) - 1) * cellSize;
+			}
+			
+			return "translate("+xshift+","+yshift+")";	
+		})
+		.attr("style:opacity",function(d){return d.hours/appModel.strongestColorForHours;} );
+		
+		
+		
+		block.selectAll("g")
+		.data(function(d) { return d.events; })
+		.enter()
+		.append("rect")
+		.attr("height", cellSize)
+		.attr("x", function(d) { return x(1-d.x0); })
+		.attr("width", function(d) { return x(d.x0) - x(d.x1); })
+		.style("fill", function(d) { return color1(d.name); });
+	}
+	
+	
+	
+	
+	
+}
+	
+	
+d3.select("#year2012").append("text")
+.attr("class", "complexLabel")
+.attr("x", 0)
+.attr("y", -40)
+.attr("height", 30)
+.attr("width", 100)
+.style("fill",(appModel.complexity == "simple")? "red" : "black" )
+.text("simple");
+
+
+
+
+d3.select("#year2012").append("text")
+.attr("class", "complexLabel")
+.attr("x", 40)
+.attr("y", -40)
+.attr("height", 30)
+.attr("width", 100)
+.style("fill",(appModel.complexity == "complex")? "red" : "black" )
+.text("complex");
+
+/*
+
+
+svg.append("text")
+.attr("class", "yrlabel")
+.attr("x", 100)
+.attr("y", -40)
+.attr("height", 30)
+.attr("width", 100)
+.style("fill",(appModel.yearLast == "2012")? "red" : "black" )
+.text("2012");
+
+
+svg.append("text")
+.attr("class", "yrlabel")
+.attr("x", 130)
+.attr("y", -40)
+.attr("height", 30)
+.attr("width", 100)
+.style("fill",(appModel.yearLast == "2013")? "red" : "black" )
+.text("2013");
+
+*/
 
 	
 	d3.select(self.frameElement).style("height", "2910px");
+
+
 	
 	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, k, selected, monthColors);});
 	$(".day").bind('mouseenter mouseout', function() {dayController(this, event);});
 	callback();
+
 	
+	
+		
+
+$(".yrlabel").bind('click', function() {switchYear(this, event);});
+$(".complexLabel").bind('click', function() {switchComplexity(this, event);});
+		
 }
 
 
-
-
 /* ---- Controllers ---- */
+
+
+function switchComplexity(arg,event) {
+
+	if (event.type == "click") {	
+
+		if (arg.textContent=="simple"){ appModel.complexity = "simple";}
+		if (arg.textContent=="complex"){ appModel.complexity = "complex";}
+		
+appView.update("complexity changed");
+	}
+
+}
+
+
+function switchYear(arg,event) {
+
+	if (event.type == "click") {	
+
+		if (arg.textContent=="2012"){ appModel.yearLast = "2012";}
+		if (arg.textContent=="2013"){ appModel.yearLast = "2013";}
+		
+appView.update("complexity changed");
+	}
+
+}
+
+
 
 
 function yearViewUpdate() {

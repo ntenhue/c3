@@ -23,6 +23,9 @@ function AppModel() {
 	this.yearFirst = 2012; // hardcoded but prepared to become dynamic
 	this.yearLast = 2013;
 
+	this.complexity = "simple";
+	this.strongestColorForHours = 12.0;
+	
 	this.selectedYear;
 	this.selectedMonth;
 
