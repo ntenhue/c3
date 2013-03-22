@@ -393,9 +393,11 @@ d3.select(svg[0][0]).append("text")
 	
 	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, selected, monthColors);});
 	$(".day").bind('mouseenter mouseout click', function() {
+		if (event.type == "click") {
+		
 		var allEventsForTheDay = [];
 		for ( var s = 0; s < selected.length; s++) {
-			if (selected[s] == true) {
+			if (selected[s] == true && (appModel.cldrStatus[s] == "updated" || appModel.cldrStatus[s] == "events added")) {
 				var events = calendarModel.getEventsInRange(calendarModel.getEvents(s), this.__data__);
 				// add color information
 				var wrappers = [];
@@ -420,7 +422,10 @@ d3.select(svg[0][0]).append("text")
 			
 		});
 		return dayController(this, allEventsForTheDay, event, tooltip);
-	});
+	}
+	
+}
+	);
 	
 	callback();
 
