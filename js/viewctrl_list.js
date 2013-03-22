@@ -85,6 +85,7 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 				this.listCalendarsDiv.append(this.cldrList[i].div);
 					
 				}
+			this.update("selectedCldrs");
 			}
 
 		/*

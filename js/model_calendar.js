@@ -35,7 +35,7 @@ this.addCalendars = function (items) {
 	
 
 	appModel.setCldrStatus(this.calendars.length,"initiated");
-	appModel.setSelectedCldrs(this.calendars.length,false);
+	appModel.setSelectedCldrs(this.calendars.length,true);
 	appModel.setCalendarsLoaded(true); // this will trigger the observer of app model
 	}
 
