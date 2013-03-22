@@ -421,8 +421,8 @@ d3.select(svg[0][0]).append("text")
 			return date1 < date2 ? -1 : 1;
 			
 		});
-		return dayController(this, allEventsForTheDay, event, tooltip);
 	}
+		return dayController(this, allEventsForTheDay, event, tooltip);
 	
 }
 	);
