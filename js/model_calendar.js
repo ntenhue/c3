@@ -22,12 +22,12 @@ this.addCalendars = function (items) {
 		items.updated = "";
 		items.busyHours = [];
 		}
-	/*
+	
 	for(var i in items) {
 		if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){
 			items.splice(i,1);	
 			}}
-	*/
+	
 	
 	this.calendars = this.calendars.concat(items);
 	this.calendars = this.sortCalendars(this.calendars);
@@ -36,7 +36,7 @@ this.addCalendars = function (items) {
 	
 
 	appModel.setCldrStatus(this.calendars.length,"initiated");
-	appModel.setSelectedCldrs(this.calendars.length,false);
+	appModel.setSelectedCldrs(this.calendars.length,true);
 	appModel.setCalendarsLoaded(true); // this will trigger the observer of app model
 	}
 

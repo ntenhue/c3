@@ -63,8 +63,17 @@ function AppCtrl(appModel, appView) {
 			listView = new ListView($("#listhere"), calendarModel);
 			askGoogle = new AskGoogle(calendarModel);			
 			askGoogle.loadCalendars();
-			
 			}	
+		
+		
+		if (what == "calendars loaded") {
+			for ( var k in appModel.selectedCldrs) {
+				appModel.setSelectedCldrs(k,true);
+				appModel.setWorkingStatus("loading...");
+				askGoogle.checkUpdatesAndLoad(k);
+				}//for
+			}
+		
 		
 	}//update
 }
