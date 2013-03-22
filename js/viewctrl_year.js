@@ -333,56 +333,34 @@ if (appModel.complexity == "complex") {
 	}
 	
 	
-	
-	
-	
 }
 	
+
+
+
+
+d3.select(svg[0][0]).append("text")
+	.attr("class", "complexLabel")
+	.attr("x", width-140)
+	.attr("y", -50)
+	.attr("height", 30)
+	.attr("width", 100)
+	.style("fill",(appModel.complexity == "simple")? "red" : "black" )
+	.text("simple");
+
 	
-d3.select("#year2012").append("text")
-.attr("class", "complexLabel")
-.attr("x", 0)
-.attr("y", -40)
-.attr("height", 30)
-.attr("width", 100)
-.style("fill",(appModel.complexity == "simple")? "red" : "black" )
-.text("simple");
+d3.select(svg[0][0]).append("text")
+	.attr("class", "complexLabel")
+	.attr("x", width-100)
+	.attr("y", -50)
+	.attr("height", 30)
+	.attr("width", 100)
+	.style("fill",(appModel.complexity == "complex")? "red" : "black" )
+	.text("complex");
+	
 
+	
 
-
-
-d3.select("#year2012").append("text")
-.attr("class", "complexLabel")
-.attr("x", 40)
-.attr("y", -40)
-.attr("height", 30)
-.attr("width", 100)
-.style("fill",(appModel.complexity == "complex")? "red" : "black" )
-.text("complex");
-
-/*
-
-
-svg.append("text")
-.attr("class", "yrlabel")
-.attr("x", 100)
-.attr("y", -40)
-.attr("height", 30)
-.attr("width", 100)
-.style("fill",(appModel.yearLast == "2012")? "red" : "black" )
-.text("2012");
-
-
-svg.append("text")
-.attr("class", "yrlabel")
-.attr("x", 130)
-.attr("y", -40)
-.attr("height", 30)
-.attr("width", 100)
-.style("fill",(appModel.yearLast == "2013")? "red" : "black" )
-.text("2013");
-
-*/
 
 	
 	d3.select(self.frameElement).style("height", "2910px");
@@ -396,8 +374,6 @@ svg.append("text")
 	
 	
 		
-
-$(".yrlabel").bind('click', function() {switchYear(this, event);});
 $(".complexLabel").bind('click', function() {switchComplexity(this, event);});
 		
 }
@@ -412,19 +388,6 @@ function switchComplexity(arg,event) {
 
 		if (arg.textContent=="simple"){ appModel.complexity = "simple";}
 		if (arg.textContent=="complex"){ appModel.complexity = "complex";}
-		
-appView.update("complexity changed");
-	}
-
-}
-
-
-function switchYear(arg,event) {
-
-	if (event.type == "click") {	
-
-		if (arg.textContent=="2012"){ appModel.yearLast = "2012";}
-		if (arg.textContent=="2013"){ appModel.yearLast = "2013";}
 		
 appView.update("complexity changed");
 	}
