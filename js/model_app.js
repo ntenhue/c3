@@ -20,17 +20,25 @@ function AppModel() {
 	this.libraryStatus = false;
 	this.calendarsLoaded = false;
 	
+//	this.searchGoing = false;
+	
 	this.yearFirst = 2012; // hardcoded but prepared to become dynamic
 	this.yearLast = 2013;
 
 	this.complexity = "simple";
+	this.lightestColorForHours = 0.0;
 	this.strongestColorForHours = 12.0;
 	
 	this.selectedYear;
 	this.selectedMonth;
 	
 	this.searchString="";
-
+	this.searchCaseSensitive=false;
+	this.searchDurationMin=0;
+	this.searchDurationMax=24;
+	this.searchHideFiltered=false;
+	
+	
 	this.selectedCldrs=[];
 	this.cldrStatus = [];
 	this.workingStatus;
@@ -52,17 +60,17 @@ function AppModel() {
 		this.libraryStatus = value;
 		this.notifyObservers("library loaded");
 	}
-	this.setCldrStatus = function(index, value) {
-		if (this.cldrStatus[index] == null) {
-			for (var i=0; i<index; i++)this.cldrStatus[i]=value;
+	this.setCldrStatus = function(index, value, length) {
+		if (length!=null) {
+			for (var i=0; i<length; i++)this.cldrStatus[i]=value;
 		} else {
 			this.cldrStatus[index] = value;
 		}
 		this.notifyObservers("cldrStatus");
 		this.notifyObservers(value);
 	}
-	this.setSelectedCldrs = function(index, value) {
-		if (this.selectedCldrs[index] == null) {
+	this.setSelectedCldrs = function(index, value, length) {
+		if (length!=null) {
 			for (var i=0; i<index; i++)this.selectedCldrs[i]=value;
 		} else {
 			this.selectedCldrs[index] = value;

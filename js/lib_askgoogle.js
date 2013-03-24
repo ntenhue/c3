@@ -38,12 +38,12 @@ function AskGoogle(calendarModel) {
 			});
 		
 		this.request.execute(function(resp) {
-			console.log(calendarModel.calendars[k].summary, "checking calendar updates:", resp.updated);
+			//console.log(calendarModel.calendars[k].summary, "checking calendar updates:", resp.updated);
 			
 			
 			if(resp.updated == calendarModel.calendars[k].updated
 			&& calendarModel.calendars[k].events != null) {
-				console.log(calendarModel.calendars[k].summary, "already up-to-date")
+				//console.log(calendarModel.calendars[k].summary, "already up-to-date")
 				appModel.setCldrStatus(k,"updated");
 				appModel.setWorkingStatus("");
 				

@@ -1,6 +1,27 @@
 var tooltip;
 function yearView(selected, colorspace, callback) {
 	
+	
+	var colorspace1 = colorspace;
+	if (appModel.complexity == "complex") {
+
+	// single or multiple calendars selected
+	var k = null;
+	for ( var int in selected) {
+		if (k != null && selected[int] == true) {k = null;	break;	}
+		if (selected[int] == true) {	k = int; }
+		}
+
+		if (k!=null) {	
+		colorspace1 = [colorspace[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];
+		
+		}
+	}
+	
+	var color = d3.scale.ordinal().range(colorspace1);
+	
+	
+	
 	$("#yearViewCanvas").empty();
 	
 	var width = 970, height = 186, cellSize = 17; 
@@ -11,7 +32,7 @@ function yearView(selected, colorspace, callback) {
 	format = d3.time.format("%Y-%m-%d");
 	
 	var heatmap = d3.scale.quantize() 
-		.domain([ 0.0, appModel.strongestColorForHours]) 
+		.domain([ appModel.lightestColorForHours, appModel.strongestColorForHours]) 
 		.range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
 	
 
@@ -144,24 +165,7 @@ function yearView(selected, colorspace, callback) {
 	
 	
 	
-	
-	var colorspace1 = colorspace;
-	if (appModel.complexity == "complex") {
 
-	// single or multiple calendars selected
-	var k = null;
-	for ( var int = 0; int < selected.length; int++) {
-		if (k != null && selected[int] == true) {k = null;	break;	}
-		if (selected[int] == true) {	k = int; }
-		}
-
-		if (k!=null) {	
-		colorspace1 = [colorspace[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];
-		
-		}
-	}
-	
-	var color = d3.scale.ordinal().range(colorspace1);
 	
 	
 	
@@ -231,31 +235,33 @@ function yearView(selected, colorspace, callback) {
 		}
 		
 	
-
+if (appModel.complexity == "simple") {
 /* ---- Import the events on date Data ---- */
-
 	var data = d3.nest() 
 		.key(function(d) { return d.date; }) 
-		.rollup(function(d) { return d[0].hours; }) 
+		.rollup(function(d) { return {hours:d[0].hours, filterPassed:d[0].filterPassed}; }) 
 		.map(calendarModel.totalBusyHours); 
-
-	if (appModel.complexity == "simple") {
 	
 		rect.filter(function(d) { return d in data;}) 
-			.attr("class", function(d) { return "day activeday " + heatmap(data[d]);})
-			.attr("busyHours",function(d){ return data[d]; })
-			.attr("date",function(d){ return d; } )
-			.attr("id", function(d){return d;})
-			.append("svg:title")
-			.text(function(d){ return data[d] + " hours of events." });
-
+		.attr("class", function(d) { 
+			if(data[d].filterPassed){ 
+				return "day activeday " + heatmap(data[d].hours)
+			} else{ 
+				return "day activeday filtered";
+				}})
+		//.attr("busyHours",function(d){ return data[d]; })
+		.attr("date",function(d){ return d; } )
+		.attr("id", function(d){return d;})
+		.append("svg:title")
+		.text(function(d){ return data[d].hours + " hours of events" });
 	};
 
 	
 	
 if (appModel.complexity == "complex") {
-
-
+	
+	var x = d3.scale.linear().rangeRound([cellSize, 0]).domain([0, cellSize]);
+	 
 	var data1 = [];
 		if (k!=null) {	
 			data1 = $.extend(true, [], calendarModel.calendars[k].busyHours);
@@ -263,40 +269,18 @@ if (appModel.complexity == "complex") {
 			data1 = $.extend(true, [], calendarModel.totalBusyHours);		
 		}
 
-		   
-	data1.forEach(function(d) {
-	    d.MAIN 			= d.hoursByColor[0];
-	    d.Lightblue 	= d.hoursByColor[1];
-	    d.Lightgreen 	= d.hoursByColor[2];
-	    d.Violet 		= d.hoursByColor[3];
-	    d.Lightred 		= d.hoursByColor[4];
-	    d.Gold 			= d.hoursByColor[5];
-	    d.Orange 		= d.hoursByColor[6];
-	    d.Turquoise 	= d.hoursByColor[7];
-	    d.Grey 			= d.hoursByColor[8];
-	    d.Blue 			= d.hoursByColor[9];
-	    d.Green 		= d.hoursByColor[10];
-	    d.Red 			= d.hoursByColor[11];
-	    });
-
-	//Sets color domain names to names of properties from data[0]
-	//"date", "hours", "hoursByColor" are omitted
-	color.domain( d3.keys(data1[0]).filter( function(key) {
-		if(key !== "date" && key !== "hours" && key !== "hoursByColor"){return key;}
-		}));
-		  
 	data1.forEach(function(d) {
 		var x0 = 0;
 		var x1 = 0;
-		d.events = color.domain().map(function(name) {
-			return {name: name, x0: x0, x1: x0 += Math.ceil(+d[name]/d.hours*cellSize)}; 
-			});
+		d.bricks = [];
+			
+		for (i in d.hoursByColor){
+			d.bricks[i] = {filterPassed: d.filterPassedByColor[i], x0: x0, x1: x0 += Math.ceil(+d.hoursByColor[i]/d.hours*cellSize)};
+			}
 		});
-
 	
-
-	var x = d3.scale.linear().rangeRound([cellSize, 0]).domain([0, cellSize]);
-	  
+	
+ 
 	for ( var int = 0; int < svg[0].length; int++) {
 		var block =d3.select('#' + svg[0][int].id).selectAll(".block")
 		.data(data1)
@@ -307,7 +291,7 @@ if (appModel.complexity == "complex") {
 		})
 		
 		.attr("class", "day activeday")
-		.attr("id", function(d){return d.date;})
+		.attr("id", function(d){return d.date;}) //link to the tooltip
 		.attr("transform", function(d){
 			var xshift=0;
 			var yshift=0;
@@ -328,19 +312,19 @@ if (appModel.complexity == "complex") {
 			
 			return "translate("+xshift+","+yshift+")";	
 		})
-		.attr("style:opacity",function(d){return d.hours/appModel.strongestColorForHours;} );
+		.attr("style:opacity",function(d){return (d.hours-appModel.lightestColorForHours)/(appModel.strongestColorForHours-appModel.lightestColorForHours);} );
 		
 		
 		
 		block.selectAll("g")
-		.data(function(d) { return d.events; })
+		.data(function(d) { return d.bricks; })
 		.enter()
 		.append("rect")
 		.attr("height", cellSize)
 		.attr("x", function(d) { return x(1-d.x0); })
 		.attr("width", function(d) { return x(d.x0) - x(d.x1); })
-		.style("fill", function(d) { return color(d.name); });
-	}
+		.style("fill", function(d,i) { return d.filterPassed? color.range()[i] : "#EEE";	});
+	}//for
 	
 	
 }
@@ -402,7 +386,13 @@ d3.select(svg[0][0]).append("text")
 				for ( var int = 0; int < events.length; int++) {
 					var wrapper = new Object();
 					wrapper.data = events[int];
-					wrapper.color = k==null? colorspace[s] : events[int].color;
+					
+					if (events[int].filterPassed){
+						wrapper.color = k==null? colorspace[s] : events[int].color;
+					}else{
+						wrapper.color = "#EEE";
+					}
+					
 					wrappers.push(wrapper);
 				}
 				allEventsForTheDay = allEventsForTheDay.concat(wrappers);
@@ -458,10 +448,10 @@ appView.update("complexity changed");
 
 
 
-function yearViewUpdate() {
+function yearViewUpdate() {	
+	
 	appModel.setWorkingStatus("updating year view...");
-	yearView(appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});	
-
+	yearView(appModel.selectedCldrs, calendarModel.colors, function(){appModel.setWorkingStatus("");});			
 }
 
 /*

@@ -183,60 +183,82 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	 * INITIALIZATION
 	 **************************************************************************/
 
-	this.barForm = $("<form>");
-	this.searchLine = $('<input type="text" value="filter, not search">');
+	this.barDiv = $("<div>");
+	this.searchLine = $('<input type="text" value="Search and hit enter!">')
+		.bind("keyup focusin focusout", {view: this}, iWannaSearch); // attach listener
 	
-	this.searchLine.bind("keyup focusin focusout", { view: this }, iWannsSearch); // attach listener
+	this.durMinLine = $('<input type="text" value="'+appModel.searchDurationMin+'">')
+		.bind("keyup focusin focusout", {view: this, what: "min"}, iWannaFilterDuration); // attach listener
+	this.durMaxLine = $('<input type="text" value="'+appModel.searchDurationMax+'">')
+		.bind("keyup focusin focusout", {view: this, what: "max"}, iWannaFilterDuration); // attach listener
 
-
+	
+	this.searchCheck = $('<input type="checkbox" id="searchcheck" text="hide filtered">');	
+	this.searchCheckLabel = $('<label for="searchcheck">').text("hide filtered");
+	this.searchCheck.bind("click", {view: this}, iWannaHideFiltered); // attach listener
+	
+	
 	/***************************************************************************
 	 * ASSEMBLING THE VIEW
 	 **************************************************************************/
- 	this.barForm.append(this.searchLine);
-	parent.append(this.barForm);
+ 	this.barDiv.append(this.searchLine, this.durMinLine, this.durMaxLine, this.searchCheck, this.searchCheckLabel);
+	parent.append(this.barDiv);
 	
 	
 }
 
 
-function iWannsSearch(event) {
+function iWannaHideFiltered(event) {
+	appModel.searchHideFiltered=event.data.view.searchCheck.prop("checked");
+	search();
+	
+}
+
+
+function iWannaFilterDuration(event) {
+	if (event.type == "keyup" && event.keyCode==13) {
+		if (event.data.what == "min")appModel.searchDurationMin = +event.data.view.durMinLine.val(); 
+		if (event.data.what == "max")appModel.searchDurationMax = +event.data.view.durMaxLine.val(); 
+		search();
+		}//keyup
+}
+
+
+function iWannaSearch(event) {
 	
 	if (event.type == "focusin") {	
-		toolbarView.searchLine.attr("value","");
+	    event.data.view.searchLine.val(appModel.searchString);
 	}
 
 	if (event.type == "focusout") {	
-		toolbarView.searchLine.attr("value","filter, not search");
+		if(appModel.searchString=="")event.data.view.searchLine.val("Search and hit enter!");
 	}
 	
-	if (event.type == "keyup") {
-		var searchfor = event.data.view.searchLine.val(); 
-		
-		
-		
-		setTimeout(function() {
+	if (event.type == "keyup" && event.keyCode==13) {
+		var searchfor = event.data.view.searchLine.val(); 	
+	//	setTimeout(function() {			
+	//	if (event.data.view.searchLine.val() == searchfor){ console.log(searchfor);
 
-		if (event.data.view.searchLine.val() == searchfor){
-		
-			console.log(searchfor);
 		appModel.searchString = searchfor;
-		for ( var k in appModel.selectedCldrs) {	
-			if (appModel.cldrStatus[k] == "updated" || appModel.cldrStatus[k] == "events added") {	
-				calendarModel.calendars[k].busyHours = calendarModel.updateBusyHours(calendarModel.calendars[k]);
-				}	
-			}
-
-		appModel.setWorkingStatus("calculating occupancy...");
-		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
-		yearViewUpdate();
-		monthViewUpdate();
-		
-		
-		
-		}}, 500);
+		search();
+				
+	//	}}, 500);
 	}//keyup
 
 }
 
 
 
+
+function search() {
+	for ( var k in appModel.selectedCldrs) {	
+		if (appModel.cldrStatus[k] == "updated" || appModel.cldrStatus[k] == "events added") {	
+			calendarModel.calendars[k].events = calendarModel.filterEvents(calendarModel.calendars[k].events);
+			calendarModel.calendars[k].busyHours = calendarModel.updateBusyHours(calendarModel.calendars[k]);
+			}	
+		}
+	appModel.setWorkingStatus("calculating occupancy...");
+	calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
+	yearViewUpdate();
+	monthViewUpdate();
+}

@@ -294,6 +294,8 @@ font: 10px Tahoma;
 .RdYlGn .q9-11{fill:rgb(137,0,27)}
 .RdYlGn .q10-11{fill:rgb(73,0,12)}
 
+.filtered {fill:#eee}
+
 .tooltip {
   position: absolute;
   display: block;

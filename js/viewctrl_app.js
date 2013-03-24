@@ -26,12 +26,16 @@ this.update = function(what) {
 		}
 	
 	
-	if (what == "events added" ) {		
-		appModel.setWorkingStatus("calculating occupancy...");
-		calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
-		yearViewUpdate();
-		monthViewUpdate();
-		legendView("#legendhere");
+	if (what == "events added" ) {
+		var see = 0;
+		for (var i in appModel.selectedCldrs) {if (appModel.selectedCldrs[i]) {see++}}
+		if (see!=0) {		
+			appModel.setWorkingStatus("calculating occupancy...");
+			calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
+			yearViewUpdate();
+			monthViewUpdate();
+			legendView("#legendhere");
+			}
 		}
 
 	

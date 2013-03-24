@@ -23,6 +23,7 @@ this.addCalendars = function (items) {
 		items.events = [];
 		items.updated = "";
 		items.busyHours = [];
+		//items.selected = items.selected != null? true:false;
 		}
 	
 	for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
@@ -34,8 +35,13 @@ this.addCalendars = function (items) {
 	for(var i in this.calendars)this.colors[i] = this.calendars[i].backgroundColor;
 	
 
-	appModel.setCldrStatus(this.calendars.length,"initiated");
-	appModel.setSelectedCldrs(this.calendars.length,true);
+	appModel.setCldrStatus(null,"initiated", this.calendars.length);
+	
+	for(var i in this.calendars){
+		console.log(i,this.calendars[i].selected==true?true:false);
+		appModel.setSelectedCldrs(i,this.calendars[i].selected==true?true:false);
+		console.log(appModel.selectedCldrs);
+	}
 	appModel.setCalendarsLoaded(true); // this will trigger the observer of app model
 	}
 
@@ -53,6 +59,7 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 		this.calendars[k].updated= upd;
 		this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
 		this.calendars[k].events = this.fillEmptyValues(this.calendars[k]);
+		this.calendars[k].events = this.filterEvents(this.calendars[k].events);
 		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k]);
 		appModel.setCldrStatus(k,"events added");	
 		}
@@ -67,7 +74,7 @@ this.clearCalendars = function () {
 	this.calendars=[];
 	this.totalBusyHours = []; 
 	this.colors = [];
-	appModel.setCldrStatus(this.calendars.length,"cleared");
+	appModel.setCldrStatus(null,"cleared", this.calendars.length);
 	appModel.setCalendarsLoaded(false);	
 	}	
 
@@ -218,7 +225,10 @@ this.fillEmptyValues = function (calendar) {
 	
 		
 		if (calendar.events[i].summary == null) calendar.events[i].summary = ""; 
+		calendar.events[i].filterPassed = false; 
+		
 		}
+	
 	return calendar.events;}
 
 
@@ -249,6 +259,7 @@ this.updateTotalBusyHours = function (calendars, selected) {
 				ttlbzyhrs[key] = busyHours[key];
 			} else {
 				ttlbzyhrs[key].hours += busyHours[key].hours;
+				ttlbzyhrs[key].filterPassed |= busyHours[key].filterPassed; 
 				for ( var int3 = 0; int3 < Object.keys(ttlbzyhrs[key].hoursByColor).length; int3++) {
 					var colorKey = Object.keys(ttlbzyhrs[key].hoursByColor)[int3];
 					ttlbzyhrs[key].hoursByColor[colorKey] += busyHours[key].hoursByColor[colorKey];
@@ -267,46 +278,36 @@ this.updateTotalBusyHours = function (calendars, selected) {
 this.updateTotalBusyHours = function (calendars, selected) {
 
 	var ttlbzyhrs = [];
-
-
 //	ttlbzyhrs.push({'date':'date', 'hours':'hours', 'hoursByColor':[] });
 
 	var pushNeeded=true;
-
 	for (var k in calendars){ if (selected[k]){
-
 //		ttlbzyhrs[0].hoursByColor[k]=calendars[k].summary;
 
 		for (var i in calendars[k].busyHours){
-
 			for (var j in ttlbzyhrs){
 				if (calendars[k].busyHours[i].date == ttlbzyhrs[j].date) {
-
-
-					ttlbzyhrs[j].hours += calendars[k].busyHours[i].hours
-
-						ttlbzyhrs[j].hoursByColor[k] += calendars[k].busyHours[i].hours;
-
+					ttlbzyhrs[j].hours += calendars[k].busyHours[i].hours;
+					ttlbzyhrs[j].hoursByColor[k] += calendars[k].busyHours[i].hours;
+					ttlbzyhrs[j].filterPassed |= calendars[k].busyHours[i].filterPassed;
+					
+					ttlbzyhrs[j].filterPassedByColor[k] |= calendars[k].busyHours[i].filterPassed;
+					
 					pushNeeded = false;
 					break;
-
-					} else {
-
+				} else {
 					if (j==ttlbzyhrs.length-1)pushNeeded = true;
-
-					}
 				}
+			}
 
 			if (pushNeeded) {
-				ttlbzyhrs.push({'date':'', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0] });
+				ttlbzyhrs.push({'date':'', 'hours':0, 'hoursByColor':[0,0,0,0,0,0,0,0,0,0,0,0], 'filterPassed':false, 'filterPassedByColor':[false,false,false,false,false,false,false,false,false,false,false,false], });
 
 				ttlbzyhrs[ttlbzyhrs.length-1].date = calendars[k].busyHours[i].date;
 				ttlbzyhrs[ttlbzyhrs.length-1].hours = calendars[k].busyHours[i].hours;
-
-
-					ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[k] = calendars[k].busyHours[i].hours;
-
-
+				ttlbzyhrs[ttlbzyhrs.length-1].hoursByColor[k] = calendars[k].busyHours[i].hours;
+				ttlbzyhrs[ttlbzyhrs.length-1].filterPassed = calendars[k].busyHours[i].filterPassed;
+				ttlbzyhrs[ttlbzyhrs.length-1].filterPassedByColor[k] = calendars[k].busyHours[i].filterPassed;
 				}
 
 		}}}
@@ -317,6 +318,23 @@ this.updateTotalBusyHours = function (calendars, selected) {
 
 
 
+this.filterEvents = function (events) {
+for (var i in events){
+	events[i].filterPassed = true &
+	 (
+		 ( appModel.searchCaseSensitive)&
+		  		(events[i].summary.indexOf(appModel.searchString.trim()) !== -1)
+		 |(!appModel.searchCaseSensitive)&
+				(events[i].summary.toLowerCase().indexOf(appModel.searchString.toLowerCase().trim()) !== -1)
+		 |(appModel.searchString == "")
+	 )
+	 &
+	 (
+		  (events[i].duration>=appModel.searchDurationMin)
+	     &(events[i].duration<=appModel.searchDurationMax)
+	 );	
+}
+return events; }//function
 
 /*
  * updateBusyHours in one calendar
@@ -337,23 +355,27 @@ this.updateBusyHoursAsMap = function (calendar) {
 	
 	for (var i in events){	if (events[i].duration<24){
 
-		if (events[i].summary.toLowerCase().indexOf(appModel.searchString.toLowerCase()) !== -1
-	|| appModel.searchString == ""
-	) {
-
-		if (busyHours[events[i].start.date] == null) {
-			var busyHour = new Object();
-			busyHour.hours = events[i].duration;
-			var hoursByColor=[0,0,0,0,0,0,0,0,0,0,0,0];
-			busyHour.hoursByColor = hoursByColor;
-			busyHour.hoursByColor[events[i].colorId] = events[i].duration;
-			busyHour.date = events[i].start.date;
-			busyHours[events[i].start.date] = busyHour;
-		} else {
-			busyHours[events[i].start.date].hours += events[i].duration;
-			busyHours[events[i].start.date].hoursByColor[events[i].colorId] += events[i].duration;		
-		}
-		}//filter
+		if (!appModel.searchHideFiltered || events[i].filterPassed){
+			
+			if (busyHours[events[i].start.date] == null) {
+				var busyHour = new Object();
+				busyHour.hours = events[i].duration;
+				var hoursByColor=[0,0,0,0,0,0,0,0,0,0,0,0];
+				busyHour.hoursByColor = hoursByColor;
+				busyHour.hoursByColor[events[i].colorId] = events[i].duration;
+				busyHour.date = events[i].start.date;
+				busyHour.filterPassed = events[i].filterPassed;
+				busyHour.filterPassedByColor=[0,0,0,0,0,0,0,0,0,0,0,0]; 
+				busyHour.filterPassedByColor[events[i].colorId] = events[i].filterPassed;
+				busyHours[events[i].start.date] = busyHour;
+			} else {
+				busyHours[events[i].start.date].filterPassed |= events[i].filterPassed;
+				busyHours[events[i].start.date].filterPassedByColor[events[i].colorId] |= events[i].filterPassed;
+				busyHours[events[i].start.date].hours += events[i].duration;
+				busyHours[events[i].start.date].hoursByColor[events[i].colorId] += events[i].duration;		
+			}
+			
+		}//searchHideFiltered
 	}}
 	
 	return busyHours;
@@ -371,25 +393,5 @@ this.convertBusyHoursMapToArray = function(busyHoursMap) {
 	return busyHoursArray;
 }
 	
-/*****************************************  
-    Observable implementation    
-*****************************************/
-/*
- * Noone really listens to it nowdays
- * see AppModel for explanations
- * 
-this._observers = [];
 
-this.addObserver = function(observer) {
-	this._observers.push(observer);
-}
-
-this.notifyObservers = function(what,k) 
-{
-	for(var i in this._observers) 
-	{
-		this._observers[i].update(what,k);
-	}	
-}*/
-	
 }

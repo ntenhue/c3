@@ -22,7 +22,7 @@ function legendView(parent) {
 	];
 
 	var color_hash = {
-		0 : [ "0 hours", "rgb(255,255,250)" ],
+		0 : [ appModel.lightestColorForHours+" hours", "rgb(255,255,250)" ],
 		1 : [ "", "rgb(255,255,204)" ],
 		2 : [ "", "rgb(255,237,160)" ],
 		3 : [ "", "rgb(254,217,118)" ],
