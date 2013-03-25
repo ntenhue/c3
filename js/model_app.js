@@ -37,6 +37,7 @@ function AppModel() {
 	this.searchDurationMin=0;
 	this.searchDurationMax=24;
 	this.searchHideFiltered=false;
+	this.searchColors=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
 	
 	
 	this.selectedCldrs=[];

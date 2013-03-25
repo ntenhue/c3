@@ -9,7 +9,7 @@ function CalendarModel(appModel){
 	this.totalBusyHours = []; 
 	this.colors = [];
 	
-	colorspaceForEvents = ["#000000","#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];
+	this.colorspaceForEvents = ["#000000","#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];
 	
 
 
@@ -26,7 +26,7 @@ this.addCalendars = function (items) {
 		//items.selected = items.selected != null? true:false;
 		}
 	
-	for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
+//	for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
 	
 	
 	this.calendars = this.calendars.concat(items);
@@ -219,7 +219,7 @@ this.fillEmptyValues = function (calendar) {
 			calendar.events[i].colorId = 0; 
 			calendar.events[i].color = calendar.backgroundColor; 
 			}else{
-			calendar.events[i].color = colorspaceForEvents[calendar.events[i].colorId];
+			calendar.events[i].color = this.colorspaceForEvents[calendar.events[i].colorId];
 			}
 		
 	
@@ -332,6 +332,11 @@ for (var i in events){
 	 (
 		  (events[i].duration>=appModel.searchDurationMin)
 	     &(events[i].duration<=appModel.searchDurationMax)
+	 )
+	 &
+	 (
+		  // this.colorspaceForEvents[events[i].colorId]
+		   appModel.searchColors[events[i].colorId]
 	 );	
 }
 return events; }//function

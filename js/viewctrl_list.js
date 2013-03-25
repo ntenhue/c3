@@ -73,13 +73,14 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 			for ( var i in calendars) {
 
 				var item = new this.item();
-				item.square.attr("id", i).appendTo(item.div);
+				item.square.attr("id", i).css("cursor","pointer").appendTo(item.div);
 				item.div.append(" ");
-				item.label.html(calendars[i].summary.substring(0,26)).appendTo(item.div);
+				item.label.html(calendars[i].summary.substring(0,26)).css("cursor","pointer").appendTo(item.div);
 				item.div.append(" ");
 				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
 				item.square.on("mousedown", { index: i }, iWannaChooseCalendars); // attach listener
+				item.label.on("mousedown", { index: i }, iWannaChooseCalendars); // attach listener
 				
 				this.cldrList[i] = item;
 				this.listCalendarsDiv.append(this.cldrList[i].div);
@@ -217,6 +218,27 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 		.attr("style","width:25px").addClass("compacttextbox")
 		.bind("keyup focusin focusout", {view: this, what: "max"}, iWannaSetColorRange); // attach listener
 
+		
+	this.colorFilterDiv = $("<div>")
+		.attr("style","display:inline");
+	var colorspaceForEvents = calendarModel.colorspaceForEvents;
+	this.colorFilterItems = [];
+
+	for (var i in colorspaceForEvents){
+		var colorFilterItem = $("<div>")
+		.css("display","inline-block")
+		.css("cursor","pointer")
+		.css("width","11px")
+		.css("height","11px") 
+		.css("background-color",colorspaceForEvents[i])
+		.css("border-color",colorspaceForEvents[i])
+		.appendTo(this.colorFilterDiv)
+		.on("mousedown", { index: i }, iWannaFilterColors); // attach listener
+	
+		this.colorFilterDiv.append(" ");		
+		this.colorFilterItems.push(colorFilterItem);
+	}
+	
 	
 	this.simpleComplexDiv = $("<div>")
 		.attr("style","display:inline; float:right");
@@ -234,14 +256,13 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 
 	
 
-
-	appModel.complexity == "complex"
 	
 	/***************************************************************************
 	 * ASSEMBLING THE VIEW
 	 **************************************************************************/
  	this.barSpan.append(
  			this.searchLine );
+	
  	this.moreOptionsSpan.append(
  			"<br/> *** GOD MODE ACTIVATED ***",
  			"<br/> filter events by duration min and max (hours): ",
@@ -250,7 +271,8 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
  			this.searchCheck, /*this.searchCheckLabel,*/
  			"<br/> adjust color scale min and max (hours): ",
  			this.colorMinTextbox, this.colorMaxTextbox,
- 			"<br/> apply by hitting [enter]").hide();
+ 			"<br/> event color filter ", this.colorFilterDiv,
+ 			"<br/> apply by hitting [enter] <br/>").hide();
  	
  	this.simpleComplexDiv.append(this.simpleLabelSpan, " " ,this.complexLabelSpan);
 
@@ -261,6 +283,10 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	
 }
 
+function iWannaFilterColors(event) {
+	appModel.searchColors[event.data.index] = !appModel.searchColors[event.data.index];
+	search();
+}
 
 function iWannaSimpleComplex(event) {
 	if (event.type == "click") {	
@@ -320,8 +346,8 @@ function iWannaSearch(event) {
 function iWannaMoreOptions(event) {
 	event.data.view.moreOptionsSpan.toggle('fast');
 	switch (event.data.view.moreSpan.text()) {
-		case "more": event.data.view.moreSpan.text("less"); break;
-		case "less": event.data.view.moreSpan.text("more"); break;	}
+		case "more": event.data.view.moreSpan.text("hide"); break;
+		case "hide": event.data.view.moreSpan.text("more"); break;	}
 
 }
 
