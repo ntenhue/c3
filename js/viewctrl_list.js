@@ -183,13 +183,24 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	 * INITIALIZATION
 	 **************************************************************************/
 
-	this.barDiv = $("<div>");
+	this.barSpan = $("<span>");
+	
 	this.searchLine = $('<input type="text" value="Search and hit enter!">')
 		.bind("keyup focusin focusout", {view: this}, iWannaSearch); // attach listener
 	
-	this.durMinLine = $('<input type="text" value="'+appModel.searchDurationMin+'">')
+	this.moreSpan = $("<span>")
+		.attr("style","cursor:pointer; text-decoration:underline")
+		.text("more")
+		.bind("click", {view: this}, iWannaMoreOptions); // attach listener
+	
+	
+	this.moreOptionsSpan = $("<span>");
+	
+	this.durMinTextbox = $('<input type="text" value="'+appModel.searchDurationMin+'">')
+		.attr("style","width:25px").addClass("compacttextbox")
 		.bind("keyup focusin focusout", {view: this, what: "min"}, iWannaFilterDuration); // attach listener
-	this.durMaxLine = $('<input type="text" value="'+appModel.searchDurationMax+'">')
+	this.durMaxTextbox = $('<input type="text" value="'+appModel.searchDurationMax+'">')
+		.attr("style","width:25px").addClass("compacttextbox")
 		.bind("keyup focusin focusout", {view: this, what: "max"}, iWannaFilterDuration); // attach listener
 
 	
@@ -198,29 +209,32 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	this.searchCheck.bind("click", {view: this}, iWannaHideFiltered); // attach listener
 	
 	
+	this.colorMinTextbox = $('<input type="text" value="'+appModel.lightestColorForHours+'">')
+		.attr("style","width:25px").addClass("compacttextbox")
+		.bind("keyup focusin focusout", {view: this, what: "min"}, iWannaSetColorRange); // attach listener
+	this.colorMaxTextbox = $('<input type="text" value="'+appModel.strongestColorForHours+'">')
+		.attr("style","width:25px").addClass("compacttextbox")
+		.bind("keyup focusin focusout", {view: this, what: "max"}, iWannaSetColorRange); // attach listener
+
+	
 	/***************************************************************************
 	 * ASSEMBLING THE VIEW
 	 **************************************************************************/
- 	this.barDiv.append(this.searchLine, this.durMinLine, this.durMaxLine, this.searchCheck, this.searchCheckLabel);
-	parent.append(this.barDiv);
+ 	this.barSpan.append(
+ 			this.searchLine );
+ 	this.moreOptionsSpan.append(
+ 			"<br/> *** GOD MODE ACTIVATED ***",
+ 			"<br/> filter events by duration min and max (hours): ",
+ 			this.durMinTextbox, this.durMaxTextbox, 
+ 			"<br/> totally hide filtered events (angie-style): ",
+ 			this.searchCheck, /*this.searchCheckLabel,*/
+ 			"<br/> adjust color scale min and max (hours): ",
+ 			this.colorMinTextbox, this.colorMaxTextbox,
+ 			"<br/>").hide();
+
+ 	parent.append(this.barSpan,this.moreOptionsSpan,this.moreSpan);
 	
 	
-}
-
-
-function iWannaHideFiltered(event) {
-	appModel.searchHideFiltered=event.data.view.searchCheck.prop("checked");
-	search();
-	
-}
-
-
-function iWannaFilterDuration(event) {
-	if (event.type == "keyup" && event.keyCode==13) {
-		if (event.data.what == "min")appModel.searchDurationMin = +event.data.view.durMinLine.val(); 
-		if (event.data.what == "max")appModel.searchDurationMax = +event.data.view.durMaxLine.val(); 
-		search();
-		}//keyup
 }
 
 
@@ -248,6 +262,41 @@ function iWannaSearch(event) {
 }
 
 
+
+function iWannaMoreOptions(event) {
+	event.data.view.moreOptionsSpan.toggle('fast');
+	switch (event.data.view.moreSpan.text()) {
+		case "more": event.data.view.moreSpan.text("less"); break;
+		case "less": event.data.view.moreSpan.text("more"); break;	}
+
+}
+
+
+
+function iWannaFilterDuration(event) {
+	if (event.type == "keyup" && event.keyCode==13) {
+		if (event.data.what == "min")appModel.searchDurationMin = +event.data.view.durMinTextbox.val(); 
+		if (event.data.what == "max")appModel.searchDurationMax = +event.data.view.durMaxTextbox.val(); 
+		search();
+		}//keyup
+}
+
+function iWannaSetColorRange(event) {
+	if (event.type == "keyup" && event.keyCode==13) {
+		if (event.data.what == "min")appModel.lightestColorForHours = +event.data.view.colorMinTextbox.val(); 
+		if (event.data.what == "max")appModel.strongestColorForHours = +event.data.view.colorMaxTextbox.val(); 
+		yearViewUpdate();
+		legendView("#legendhere");
+		}//keyup
+}
+
+
+
+function iWannaHideFiltered(event) {
+	appModel.searchHideFiltered=event.data.view.searchCheck.prop("checked");
+	search();
+	
+}
 
 
 function search() {
