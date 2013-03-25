@@ -24,7 +24,7 @@ function yearView(selected, colorspace, callback) {
 	
 	$("#yearViewCanvas").empty();
 	
-	var width = 970, height = 186, cellSize = 17; 
+	var width = 970, height = 180, cellSize = 17; 
 	var day = d3.time.format("%w"), 
 	week = d3.time.format("%U"), 
 	weekSun = d3.time.format("%W"),
@@ -43,7 +43,7 @@ function yearView(selected, colorspace, callback) {
 		.attr("height", height)
 		.attr("class", "RdYlGn") 
 		.append("g")
-		.attr( "transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")")
+		.attr( "transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 14) + ")")
 		.attr("id", function(d) { return "year" + d; }); 
 	
 	var yearLabel = svg.append("text")
@@ -333,25 +333,7 @@ if (appModel.complexity == "complex") {
 
 
 
-d3.select(svg[0][0]).append("text")
-	.attr("class", "complexLabel")
-	.attr("x", width-140)
-	.attr("y", -50)
-	.attr("height", 30)
-	.attr("width", 100)
-	.style("fill",(appModel.complexity == "simple")? "red" : "black" )
-	.text("simple");
 
-	
-d3.select(svg[0][0]).append("text")
-	.attr("class", "complexLabel")
-	.attr("x", width-100)
-	.attr("y", -50)
-	.attr("height", 30)
-	.attr("width", 100)
-	.style("fill",(appModel.complexity == "complex")? "red" : "black" )
-	.text("complex");
-	
 
 	
 
@@ -419,9 +401,6 @@ d3.select(svg[0][0]).append("text")
 
 	
 	
-		
-$(".complexLabel").bind('click', function() {switchComplexity(this, event);});
-		
 }
 
 
@@ -433,17 +412,6 @@ $(".complexLabel").bind('click', function() {switchComplexity(this, event);});
 /* ---- Controllers ---- */
 
 
-function switchComplexity(arg,event) {
-
-	if (event.type == "click") {	
-
-		if (arg.textContent=="simple"){ appModel.complexity = "simple";}
-		if (arg.textContent=="complex"){ appModel.complexity = "complex";}
-		
-appView.update("complexity changed");
-	}
-
-}
 
 
 

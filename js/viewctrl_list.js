@@ -183,13 +183,14 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	 * INITIALIZATION
 	 **************************************************************************/
 
-	this.barSpan = $("<span>");
+	this.barSpan = $("<div>")
+		.attr("style","display:inline");
 	
 	this.searchLine = $('<input type="text" value="Search and hit enter!">')
 		.bind("keyup focusin focusout", {view: this}, iWannaSearch); // attach listener
 	
-	this.moreSpan = $("<span>")
-		.attr("style","cursor:pointer; text-decoration:underline")
+	this.moreSpan = $("<div>")
+		.attr("style","cursor:pointer; text-decoration:underline; display:inline")
 		.text("more")
 		.bind("click", {view: this}, iWannaMoreOptions); // attach listener
 	
@@ -217,6 +218,25 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 		.bind("keyup focusin focusout", {view: this, what: "max"}, iWannaSetColorRange); // attach listener
 
 	
+	this.simpleComplexDiv = $("<div>")
+		.attr("style","display:inline; float:right");
+	
+	this.simpleLabelSpan = $("<span>")
+		.addClass("complexLabel")
+		.text("simple")
+		.addClass("label-chosen")
+		.bind("click mouseover mouseout", {view: this, what: "simple"}, iWannaSimpleComplex); // attach listener
+
+	this.complexLabelSpan = $("<span>")
+		.addClass("complexLabel")
+		.text("complex")
+		.bind("click mouseover mouseout", {view: this, what: "complex"}, iWannaSimpleComplex); // attach listener
+
+	
+
+
+	appModel.complexity == "complex"
+	
 	/***************************************************************************
 	 * ASSEMBLING THE VIEW
 	 **************************************************************************/
@@ -230,12 +250,46 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
  			this.searchCheck, /*this.searchCheckLabel,*/
  			"<br/> adjust color scale min and max (hours): ",
  			this.colorMinTextbox, this.colorMaxTextbox,
- 			"<br/>").hide();
+ 			"<br/> apply by hitting [enter]").hide();
+ 	
+ 	this.simpleComplexDiv.append(this.simpleLabelSpan, " " ,this.complexLabelSpan);
 
- 	parent.append(this.barSpan,this.moreOptionsSpan,this.moreSpan);
+ 	parent.append(this.barSpan, " " ,this.moreOptionsSpan,this.moreSpan, this.simpleComplexDiv);
+ 	
+ 	parent.attr("style","padding-top:25px; padding-left:50px");
 	
 	
 }
+
+
+function iWannaSimpleComplex(event) {
+	if (event.type == "click") {	
+		event.data.view.simpleLabelSpan.removeClass("label-chosen");
+		event.data.view.complexLabelSpan.removeClass("label-chosen");
+		
+		if (event.data.what=="simple"){
+			appModel.complexity = "simple";
+			event.data.view.simpleLabelSpan.addClass("label-chosen");
+			}
+		if (event.data.what=="complex"){
+			appModel.complexity = "complex";
+			event.data.view.complexLabelSpan.addClass("label-chosen");
+			}
+		appView.update("complexity changed");
+		}
+	
+	if (event.type == "mouseover") {	
+		if (event.data.what=="simple")event.data.view.simpleLabelSpan.addClass("label-mouse-over");
+		if (event.data.what=="complex")event.data.view.complexLabelSpan.addClass("label-mouse-over");	
+	}
+
+	if (event.type == "mouseout") {	
+		if (event.data.what=="simple")event.data.view.simpleLabelSpan.removeClass("label-mouse-over");
+		if (event.data.what=="complex")event.data.view.complexLabelSpan.removeClass("label-mouse-over");	
+	}
+	
+	 
+	}
 
 
 function iWannaSearch(event) {
@@ -275,16 +329,16 @@ function iWannaMoreOptions(event) {
 
 function iWannaFilterDuration(event) {
 	if (event.type == "keyup" && event.keyCode==13) {
-		if (event.data.what == "min")appModel.searchDurationMin = +event.data.view.durMinTextbox.val(); 
-		if (event.data.what == "max")appModel.searchDurationMax = +event.data.view.durMaxTextbox.val(); 
+		appModel.searchDurationMin = +event.data.view.durMinTextbox.val(); 
+		appModel.searchDurationMax = +event.data.view.durMaxTextbox.val(); 
 		search();
 		}//keyup
 }
 
 function iWannaSetColorRange(event) {
 	if (event.type == "keyup" && event.keyCode==13) {
-		if (event.data.what == "min")appModel.lightestColorForHours = +event.data.view.colorMinTextbox.val(); 
-		if (event.data.what == "max")appModel.strongestColorForHours = +event.data.view.colorMaxTextbox.val(); 
+		appModel.lightestColorForHours = +event.data.view.colorMinTextbox.val(); 
+		appModel.strongestColorForHours = +event.data.view.colorMaxTextbox.val(); 
 		yearViewUpdate();
 		legendView("#legendhere");
 		}//keyup

@@ -229,9 +229,22 @@ h1{
 
 .complexLabel {
 font: 12px Tahoma;
+background-color: #F0BB77;
 cursor: pointer;
-text-decoration:underline;
+/*text-decoration:underline;*/
+padding: 2px 10px 2px 10px;
+margin-right: 8px;
 }
+
+.label-mouse-over {
+background-color: #EE9944;
+}
+
+
+.label-chosen {
+background-color: #EE9944;
+}
+
 
 
 
