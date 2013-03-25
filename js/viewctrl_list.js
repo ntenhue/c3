@@ -79,8 +79,7 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 				item.div.append(" ");
 				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
-				item.square.on("mousedown", { index: i }, iWannaChooseCalendars); // attach listener
-				item.label.on("mousedown", { index: i }, iWannaChooseCalendars); // attach listener
+				item.div.on("mouseover mouseout mousedown", { index: i }, iWannaChooseCalendars); // attach listener
 				
 				this.cldrList[i] = item;
 				this.listCalendarsDiv.append(this.cldrList[i].div);
@@ -140,6 +139,19 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 
 
 function iWannaChooseCalendars(event) { 
+	
+	if (event.type == "mouseover") {
+		var index=event.data.index;
+		listView.cldrList[index].square.css("background-color",calendarModel.colors[index]);
+		listView.cldrList[index].square.css("border-color",calendarModel.colors[index]);
+	}
+	
+	if (event.type == "mouseout") {
+		var index=event.data.index;
+		listView.update("selectedCldrs");
+	}
+	
+	if (event.type == "mousedown") {	
 	var index=event.data.index;
 	appModel.setSelectedCldrs(index, !appModel.getSelectedCldrs(index));
 
@@ -163,6 +175,8 @@ function iWannaChooseCalendars(event) {
 			askGoogle.checkUpdatesAndLoad(k);
 			}
 		}//for
+	
+	}//click
 }
 
 
@@ -187,7 +201,7 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	this.barSpan = $("<div>")
 		.attr("style","display:inline");
 	
-	this.searchLine = $('<input type="text" value="Search and hit enter!">')
+	this.searchLine = $('<input type="text" value="Search and hit enter">')
 		.bind("keyup focusin focusout", {view: this}, iWannaSearch); // attach listener
 	
 	this.moreSpan = $("<div>")
@@ -224,14 +238,14 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	var colorspaceForEvents = calendarModel.colorspaceForEvents;
 	this.colorFilterItems = [];
 
-	for (var i in colorspaceForEvents){
+	for (var i in colorspaceForEvents){//Google has 12 possible colors for events, specified by colorId. 0 is default color = color of the calendar
 		var colorFilterItem = $("<div>")
 		.css("display","inline-block")
 		.css("cursor","pointer")
+		.css("background-color",colorspaceForEvents[i])
+		.css("border","1px solid" + colorspaceForEvents[i])
 		.css("width","11px")
 		.css("height","11px") 
-		.css("background-color",colorspaceForEvents[i])
-		.css("border-color",colorspaceForEvents[i])
 		.appendTo(this.colorFilterDiv)
 		.on("mousedown", { index: i }, iWannaFilterColors); // attach listener
 	
@@ -246,7 +260,7 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 	this.simpleLabelSpan = $("<span>")
 		.addClass("complexLabel")
 		.text("simple")
-		.addClass("label-chosen")
+		.addClass("complexLabel-active")
 		.bind("click mouseover mouseout", {view: this, what: "simple"}, iWannaSimpleComplex); // attach listener
 
 	this.complexLabelSpan = $("<span>")
@@ -264,55 +278,73 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
  			this.searchLine );
 	
  	this.moreOptionsSpan.append(
- 			"<br/> *** GOD MODE ACTIVATED ***",
- 			"<br/> filter events by duration min and max (hours): ",
- 			this.durMinTextbox, this.durMaxTextbox, 
- 			"<br/> totally hide filtered events (angie-style): ",
- 			this.searchCheck, /*this.searchCheckLabel,*/
- 			"<br/> adjust color scale min and max (hours): ",
+ 			" Filter by event colors: ", this.colorFilterDiv,
+ 			" or duration, h: ", this.durMinTextbox, this.durMaxTextbox, 
+ 			" ", this.searchCheck, this.searchCheckLabel,
+ 			"<br/> Color scale min and max, h: ",
  			this.colorMinTextbox, this.colorMaxTextbox,
- 			"<br/> event color filter ", this.colorFilterDiv,
- 			"<br/> apply by hitting [enter] <br/>").hide();
+ 			
+ 			" Enter numbers, apply by hitting enter. This is an experimental section :) ").hide();
  	
- 	this.simpleComplexDiv.append(this.simpleLabelSpan, " " ,this.complexLabelSpan);
+ 	this.simpleComplexDiv.append(this.simpleLabelSpan,this.complexLabelSpan);
 
  	parent.append(this.barSpan, " " ,this.moreOptionsSpan,this.moreSpan, this.simpleComplexDiv);
  	
  	parent.attr("style","padding-top:25px; padding-left:50px");
 	
+ 	
+	/***************************************************************************
+	 * Observer implementation
+	 **************************************************************************/
+
+	// Register an observer to the app model
+	appModel.addObserver(this);
+	
+	this.update = function(what) {
+		if (what == "color filtering"){
+			for ( var i in this.colorFilterItems) {
+				
+				if (appModel.searchColors[i]){
+					this.colorFilterItems[i].css("opacity","1.0")
+					.css("border-color",this.colorFilterItems[i].css("background-color"));					
+				}else{
+					this.colorFilterItems[i].css("opacity","0.2")
+					.css("border-color","#000");
+				}
+			("border-color", "#CCCCCC");
+			}
+		}
+	}//update
 	
 }
 
 function iWannaFilterColors(event) {
 	appModel.searchColors[event.data.index] = !appModel.searchColors[event.data.index];
+	toolbarView.update ("color filtering");
 	search();
 }
 
 function iWannaSimpleComplex(event) {
+		var s = event.data.view.simpleLabelSpan;
+		var c = event.data.view.complexLabelSpan;
+	
 	if (event.type == "click") {	
-		event.data.view.simpleLabelSpan.removeClass("label-chosen");
-		event.data.view.complexLabelSpan.removeClass("label-chosen");
-		
-		if (event.data.what=="simple"){
-			appModel.complexity = "simple";
-			event.data.view.simpleLabelSpan.addClass("label-chosen");
-			}
-		if (event.data.what=="complex"){
-			appModel.complexity = "complex";
-			event.data.view.complexLabelSpan.addClass("label-chosen");
-			}
+		s.removeClass("complexLabel-active");
+		c.removeClass("complexLabel-active");
+		if (event.data.what=="simple"){	appModel.complexity = "simple";	s.addClass("complexLabel-active");		}
+		if (event.data.what=="complex"){appModel.complexity = "complex"; c.addClass("complexLabel-active");	}
 		appView.update("complexity changed");
 		}
 	
 	if (event.type == "mouseover") {	
-		if (event.data.what=="simple")event.data.view.simpleLabelSpan.addClass("label-mouse-over");
-		if (event.data.what=="complex")event.data.view.complexLabelSpan.addClass("label-mouse-over");	
-	}
+		if (event.data.what=="simple"){	s.addClass("complexLabel-active");	c.removeClass("complexLabel-active");}
+		if (event.data.what=="complex"){	c.addClass("complexLabel-active");	s.removeClass("complexLabel-active");}
+		}
 
 	if (event.type == "mouseout") {	
-		if (event.data.what=="simple")event.data.view.simpleLabelSpan.removeClass("label-mouse-over");
-		if (event.data.what=="complex")event.data.view.complexLabelSpan.removeClass("label-mouse-over");	
-	}
+		if (appModel.complexity == "simple"){s.addClass("complexLabel-active");	c.removeClass("complexLabel-active");}
+		if (appModel.complexity == "complex"){c.addClass("complexLabel-active");s.removeClass("complexLabel-active");}
+		}
 	
 	 
 	}
@@ -325,7 +357,7 @@ function iWannaSearch(event) {
 	}
 
 	if (event.type == "focusout") {	
-		if(appModel.searchString=="")event.data.view.searchLine.val("Search and hit enter!");
+		if(appModel.searchString=="")event.data.view.searchLine.val("Search and hit enter");
 	}
 	
 	if (event.type == "keyup" && event.keyCode==13) {

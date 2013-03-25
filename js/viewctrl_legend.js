@@ -2,6 +2,16 @@ function legendView(parent) {
 	
 	$(parent).empty();
 
+	if (appModel.complexity == "simple"){
+		$(parent).show();
+		$("#explanation").html("Colors range from light to dark, depending on how busy you are.")
+	}
+	if (appModel.complexity == "complex"){
+		$(parent).hide();
+		$("#explanation").html("</br>Map is colored by native colors of calendars (or events if only a single calendar is displayed). Opacity shows the occupied time for each day: " +appModel.lightestColorForHours + " - " + appModel.strongestColorForHours + " hours")
+	}
+	
+	
 	// Width and height
 	var w = 180;
 	var h = 30;
@@ -73,4 +83,8 @@ function legendView(parent) {
 				.text(color_hash[String(i)][0]);
 
 				});
+
+	
+		
+
 }

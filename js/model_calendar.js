@@ -26,7 +26,7 @@ this.addCalendars = function (items) {
 		//items.selected = items.selected != null? true:false;
 		}
 	
-//	for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
+	//for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
 	
 	
 	this.calendars = this.calendars.concat(items);
@@ -37,11 +37,7 @@ this.addCalendars = function (items) {
 
 	appModel.setCldrStatus(null,"initiated", this.calendars.length);
 	
-	for(var i in this.calendars){
-		console.log(i,this.calendars[i].selected==true?true:false);
-		appModel.setSelectedCldrs(i,this.calendars[i].selected==true?true:false);
-		console.log(appModel.selectedCldrs);
-	}
+	for(var i in this.calendars){appModel.setSelectedCldrs(i,this.calendars[i].selected==true?true:false);}
 	appModel.setCalendarsLoaded(true); // this will trigger the observer of app model
 	}
 

@@ -78,7 +78,7 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 	//Sets color domain names to names of properties from data[0]
 	//"date", "hours", "hoursByColor" are omitted
 	color.domain( d3.keys(data[0]).filter( function(key) {
-		if(key !== "date" && key !== "hours" && key !== "hoursByColor"){return key;}
+		if(key !== "date" && key !== "hours" && key !== "hoursByColor" && key !== "filterPassed" && key !== "filterPassedByColor"){return key;}
 		}));
 		  
 	data.forEach(function(d) {
@@ -127,7 +127,7 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 		.append("g")
 		.attr("class", "g")
 		.attr("transform", function(d) { return "translate(" + dateNumber(dateFormat.parse(d.date))*14 + ",0)"; });
-		
+	
 	state.selectAll("rect")
 		.data(function(d) { return d.events; })
 		.enter()
@@ -136,7 +136,7 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 		.attr("y", function(d) { return y(d.y1); })
 		.attr("height", function(d) { return y(d.y0) - y(d.y1); })
 		.style("fill", function(d) { return color(d.name); });
-			
+		
 
 	if (k!=null){	// set the Legend
 /*

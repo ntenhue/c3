@@ -28,7 +28,11 @@ this.update = function(what) {
 	
 	if (what == "events added" ) {
 		var see = 0;
-		for (var i in appModel.selectedCldrs) {if (appModel.selectedCldrs[i]) {see++}}
+		for (var i in appModel.selectedCldrs) { if (appModel.selectedCldrs[i])see=1; }
+		for (var i in appModel.selectedCldrs) { if  
+					   (appModel.cldrStatus[i].substring(0,8) == "<br>load"||
+						appModel.cldrStatus[i] == "loading..." ||
+						appModel.cldrStatus[i] == "checking...")see=0;}
 		if (see!=0) {		
 			appModel.setWorkingStatus("calculating occupancy...");
 			calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
@@ -37,7 +41,7 @@ this.update = function(what) {
 			legendView("#legendhere");
 			}
 		}
-
+	
 	
 	}//update
 }
