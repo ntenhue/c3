@@ -73,13 +73,14 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 			for ( var i in calendars) {
 
 				var item = new this.item();
-				item.square.attr("id", i).css("cursor","pointer").appendTo(item.div);
+				item.square.attr("id", i).appendTo(item.div);
 				item.div.append(" ");
-				item.label.html(calendars[i].summary.substring(0,26)).css("cursor","pointer").appendTo(item.div);
+				item.label.html(calendars[i].summary.substring(0,26)).appendTo(item.div);
 				item.div.append(" ");
 				item.status.html("").appendTo(item.div);
 				item.div.append("<br>");
-				item.div.on("mouseover mouseout mousedown", { index: i }, iWannaChooseCalendars); // attach listener
+				item.div.css("cursor","pointer")
+						.on("mouseover mouseout mousedown", { index: i }, iWannaChooseCalendars); // attach listener
 				
 				this.cldrList[i] = item;
 				this.listCalendarsDiv.append(this.cldrList[i].div);
@@ -144,10 +145,12 @@ function iWannaChooseCalendars(event) {
 		var index=event.data.index;
 		listView.cldrList[index].square.css("background-color",calendarModel.colors[index]);
 		listView.cldrList[index].square.css("border-color",calendarModel.colors[index]);
+		listView.cldrList[index].div.css("background-color","#eeeeee");
 	}
 	
 	if (event.type == "mouseout") {
 		var index=event.data.index;
+		listView.cldrList[index].div.css("background-color","#ffffff");
 		listView.update("selectedCldrs");
 	}
 	

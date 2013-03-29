@@ -198,12 +198,12 @@ this.updateEventsDuration = function (events) {
 			events[i].end.date = events[i].end.dateTime.substring(0,10);
 			events[i].end.time = events[i].end.dateTime.substring(11,16);
 			
-			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + ", " + events[i].start.time)), 
-					new Date(Date.parse(events[i].end.date + ", " + events[i].end.time)));
+			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + "T" + events[i].start.time)), 
+					new Date(Date.parse(events[i].end.date + "T" + events[i].end.time)));
 		} else {
 			// this is a whole-day event
 			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + ", 00:00")), 
-					new Date(Date.parse(events[i].end.date + ", 00:00"))); 
+					new Date(Date.parse(events[i].end.date + "T00:00"))); 
 		}
 	}
 	return events;}

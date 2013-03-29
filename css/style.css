@@ -207,7 +207,8 @@ h1{
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: #555;
+  width: 3px;
   shape-rendering: crispEdges;
 }
 
@@ -219,7 +220,11 @@ h1{
   display: none;
 }
 
-
+.y.axis path {
+  fill: none;
+  stroke: #CCC;
+  stroke-width: 1px;
+}
 
 
 
@@ -231,6 +236,8 @@ h1{
 font: 12px Tahoma;
 background-color: #eee;
 cursor: pointer;
+    border-radius: 3px;
+  	border: 1px solid #c6c6c6;
 
 padding: 2px 10px 2px 10px;
 margin-right: 8px;

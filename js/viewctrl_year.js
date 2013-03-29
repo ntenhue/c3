@@ -355,8 +355,9 @@ if (appModel.complexity == "complex") {
 		$(table).addClass("tooltipTable");
 	}
 	
-	$(".monthLabel").bind('mouseenter mouseout click', function() {monthLabelController(this, event, selected, colorspace);});
-	$(".activeday").bind('mouseenter mouseout click', function() {
+
+	$(".monthLabel").bind('mouseenter mouseout click', function(event) {monthLabelController(event, this, selected, colorspace);});
+	$(".activeday").bind('mouseenter mouseout click', function(event) {
 		if (event.type == "click") {
 		
 		var allEventsForTheDay = [];
@@ -431,7 +432,9 @@ function yearViewUpdate() {
  * selected: the array is selected calendars
  * colorspace: the array of available colors for months
  */
-function monthLabelController(monthLabel, event, selected, colorspace) {
+function monthLabelController(event, monthLabel, selected, colorspace) {
+	//var monthLabel = event.data.monthLabel;
+
 	if (event.type == "mouseover") {		
 		$(monthLabel).css("fill","#FF0000");
 	} else if (event.type == "mouseout") {
