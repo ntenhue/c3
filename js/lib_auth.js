@@ -5,7 +5,7 @@
  * 
  */
 
-function Authentification(appModel) {
+function Authentification() {
 	var clientId = '237411638986.apps.googleusercontent.com';
 	var apiKey = 'AIzaSyCH9eEr4ijN_GsM0O-P6KIT9Y6n-VOTfOI';
 	var scopes = 'https://www.googleapis.com/auth/calendar';
@@ -14,7 +14,7 @@ function Authentification(appModel) {
 	
 
 	//need to wait while gapi library loads
-	setTimeout(function() {
+	//setTimeout(function() {
 
 		function handleClientLoad() {
 			gapi.client.setApiKey(apiKey);
@@ -71,6 +71,6 @@ function Authentification(appModel) {
 		
 		
 
-	}, 1000);
+	//}, 1000);
 
 }

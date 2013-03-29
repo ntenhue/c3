@@ -27,6 +27,7 @@ this.update = function(what) {
 	
 	
 	if (what == "events added" ) {
+		appModel.setWorkingStatus("");
 		var see = 0;
 		for (var i in appModel.selectedCldrs) { if (appModel.selectedCldrs[i])see=1; }
 		for (var i in appModel.selectedCldrs) { if  
@@ -55,7 +56,7 @@ function AppCtrl(appModel, appView) {
 	 *
 	 */
 	
-	authentification = new Authentification(appModel);
+	//authentification = new Authentification(appModel);
 	
 	// while waiting API to load, initialize model and create the grid
 	calendarModel = new CalendarModel(appModel);
