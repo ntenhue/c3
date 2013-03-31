@@ -56,8 +56,8 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	var color = d3.scale.ordinal().range(colorspace1);
 
 	var data = [];
-	var startPoint = yearNumber+"-"+monthNumber;
-	var endPoint = yearNumber+"-"+monthNumber;
+	var startPoint = yearNumber+"-"+(monthNumber<10?"0"+monthNumber:monthNumber); // date parser in firefox cannot do with 2013-2, he needs 2013-02
+	var endPoint = yearNumber+"-"+(monthNumber<10?"0"+monthNumber:monthNumber);
 	var cellsize = width/32;
 	
 	
@@ -115,7 +115,7 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	data = data.sort(function(a,b) {return b.duration - a.duration;});
 
 	var eventsByDays = {};
-	data.forEach(function(d) {
+	data.forEach(function(d) { if(!d.allDayEvent && (!appModel.searchHideFiltered || d.filterPassed)){
 		if(eventsByDays[d.start.date]==null)eventsByDays[d.start.date]=[];
 		d.parallelDepth = 1;
 		d.parallelPosition = 1;
@@ -129,7 +129,7 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 				eventsByDays[d.start.date][int].parallelPosition++;
 			}
 		}
-	});
+	}});
 	
 
 	for (var day in eventsByDays){

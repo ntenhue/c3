@@ -53,8 +53,6 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 	if (nextPageToken==null){
 		// if this is a last or the only page of events
 		this.calendars[k].updated= upd;
-		
-		this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
 		this.calendars[k].events = this.fillEmptyValues(this.calendars[k]);
 		this.calendars[k].events = this.splitEvents(this.calendars[k].events);
 		this.calendars[k].events = this.filterEvents(this.calendars[k].events);
@@ -213,54 +211,39 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 
 
 
-	
-/*
- * updateEventsDuration calculates duration of all events
- * params: array of events, google style
- * returns: array of events, google style, with property duration containing the result for each event
- * 
- */	
-this.updateEventsDuration = function (events) {
 
-	// calculate the difference between two dates in hours
-	var dateDiff = function (startDate, endDate){
-		var diff = endDate - startDate;
-		return diff / ( 1000 * 60 *60 );
-		};
-
-
-	for (var i in events){
-		if (events[i].start.hasOwnProperty("dateTime")){
-			// this is a non-whole day event. we need to add there date and time props
-			events[i].start.date = events[i].start.dateTime.substring(0,10);
-			events[i].start.time = events[i].start.dateTime.substring(11,16);
-			events[i].end.date = events[i].end.dateTime.substring(0,10);
-			events[i].end.time = events[i].end.dateTime.substring(11,16);
-			
-			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + "T" + events[i].start.time)), 
-					new Date(Date.parse(events[i].end.date + "T" + events[i].end.time)));
-		} else {
-			// this is a whole-day event
-			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + "T00:00")), 
-					new Date(Date.parse(events[i].end.date + "T00:00"))); 
-		}
-	}
-	return events;}
 	
 	
 this.fillEmptyValues = function (calendar) {
-	for (var i in calendar.events){	
-		if (calendar.events[i].colorId == null) {
-			calendar.events[i].colorId = 0; 
-			calendar.events[i].color = calendar.backgroundColor; 
+	var events = calendar.events;
+	
+	for (var i in events){	
+		if (events[i].colorId == null) {
+			events[i].colorId = 0; 
+			events[i].color = calendar.backgroundColor; 
 			}else{
-			calendar.events[i].color = this.colorspaceForEvents[calendar.events[i].colorId];
+			events[i].color = this.colorspaceForEvents[events[i].colorId];
 			}
 		
-	
 		
-		if (calendar.events[i].summary == null) calendar.events[i].summary = ""; 
-		calendar.events[i].filterPassed = false; 
+
+		events[i].allDayEvent = (events[i].start.dateTime == null);	
+		if (events[i].allDayEvent){
+		events[i].start.time = "00:00";
+		events[i].end.time = "00:00";			
+		}else{
+		// this is a non-whole day event. we need to add there date and time props
+		events[i].start.date = events[i].start.dateTime.substring(0,10);
+		events[i].start.time = events[i].start.dateTime.substring(11,16);
+		events[i].end.date = events[i].end.dateTime.substring(0,10);
+		events[i].end.time = events[i].end.dateTime.substring(11,16);
+		}
+		events[i].duration=(new Date(Date.parse(events[i].end.date   + "T" + events[i].end.time  )) -
+							new Date(Date.parse(events[i].start.date + "T" + events[i].start.time)) ) 
+							/ ( 1000 * 60 *60 );
+		
+		if (events[i].summary == null) events[i].summary = ""; 
+		events[i].filterPassed = false; 
 		
 		}
 	
