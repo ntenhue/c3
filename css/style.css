@@ -221,6 +221,7 @@ h1{
 }
 
 .y.axis path {
+	display: none;
   fill: none;
   stroke: #CCC;
   stroke-width: 1px;
@@ -366,4 +367,13 @@ a:link {
 }
 a:hover {
   color: #fda363;
+}
+
+
+
+.grid .tick {
+    stroke: #eee;
+}
+.grid path {
+      stroke-width: 0;
 }

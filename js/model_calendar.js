@@ -53,8 +53,10 @@ this.addEvents = function (k, items, upd, nextPageToken) {
 	if (nextPageToken==null){
 		// if this is a last or the only page of events
 		this.calendars[k].updated= upd;
+		
 		this.calendars[k].events = this.updateEventsDuration(this.calendars[k].events);
 		this.calendars[k].events = this.fillEmptyValues(this.calendars[k]);
+		this.calendars[k].events = this.splitEvents(this.calendars[k].events);
 		this.calendars[k].events = this.filterEvents(this.calendars[k].events);
 		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k]);
 		appModel.setCldrStatus(k,"events added");	
@@ -141,34 +143,71 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 	// all 2013:  ("2013")
 	
 	// defensive coding
-	if (events == null) {
-		return null;
-	}
+	if (events == null)return null;
 	
-	if (tillAsked == null) tillAsked=fromAsked;
+	
+	if (tillAsked == null)tillAsked=fromAsked;
 	var result=[];
+	
 	
 	var from = {"y":0,"m":0,"d":0}
 	var till = {"y":9999,"m":99,"d":99}
 	
+	var onedash = fromAsked.indexOf("-");
+	var twodash = fromAsked.substring(onedash+1).indexOf("-");
+
+	if (onedash!=-1){	
+		if (twodash!=-1){
+			//year month day
+			from.y = fromAsked.substring(0,onedash);
+			from.m = fromAsked.substring(onedash+1,twodash+onedash+1);
+			from.d = fromAsked.substring(twodash+1+onedash+1);			
+		}else{
+			//year month
+			from.y = fromAsked.substring(0,onedash);
+			from.m = fromAsked.substring(onedash+1);
+			from.d = 01;
+		}	
+	}else{
+		// year	
+		from.y = fromAsked;
+		from.m = 01;
+		from.d = 01;
+	}
 	
-	if (fromAsked.length>=4) from.y = fromAsked.substring(0,4);
-	if (fromAsked.length>=7) from.m = fromAsked.substring(5,7);
-	if (fromAsked.length>=9) from.d = fromAsked.substring(8,10);
-							 from.date = new Date(from.y,from.m-1,from.d);
+	var onedash = tillAsked.indexOf("-");
+	var twodash = tillAsked.substring(onedash+1).indexOf("-")
+
+	if (onedash!=-1){	
+		if (twodash!=-1){
+			//year month day
+			till.y = tillAsked.substring(0,onedash);
+			till.m = tillAsked.substring(onedash+1,twodash+onedash+1);
+			till.d = tillAsked.substring(twodash+1+onedash+1);			
+		}else{
+			//year month
+			till.y = tillAsked.substring(0,onedash);
+			till.m = +tillAsked.substring(onedash+1)+1;
+			till.d = 00;
+		}	
+	}else{
+		// year	
+		till.y = +tillAsked+1;
+		till.m = 01;
+		till.d = 00;
+	}
 	
-	if (tillAsked.length>=4) till.y = tillAsked.substring(0,4);
-	if (tillAsked.length>=7) till.m = tillAsked.substring(5,7);
-	if (tillAsked.length>=9) till.d = tillAsked.substring(8,10);
-							 till.date = new Date(till.y,till.m-1,till.d);
-		
+	from.date = new Date(from.y,from.m-1,from.d);
+	till.date = new Date(till.y,till.m-1,till.d);
+	
+	
 	for (var i in events){
 		var eventDateStart = new Date (events[i].start.date.substring(0,4),
-									   events[i].start.date.substring(5,7)-1,
-									   events[i].start.date.substring(8,10));
+				   				       events[i].start.date.substring(5,7)-1,
+				   					   events[i].start.date.substring(8,10));
 		if(eventDateStart>=from.date && eventDateStart<=till.date) result.push (events[i]);
 		}
-	
+
 	return result;
 	}
 
@@ -202,7 +241,7 @@ this.updateEventsDuration = function (events) {
 					new Date(Date.parse(events[i].end.date + "T" + events[i].end.time)));
 		} else {
 			// this is a whole-day event
-			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + ", 00:00")), 
+			events[i].duration=dateDiff(new Date(Date.parse(events[i].start.date + "T00:00")), 
 					new Date(Date.parse(events[i].end.date + "T00:00"))); 
 		}
 	}
@@ -228,6 +267,28 @@ this.fillEmptyValues = function (calendar) {
 	return calendar.events;}
 
 
+
+this.splitEvents = function (events) {
+	events.forEach(function(d,i) {
+	if(d.start.date != d.end.date && d.end.time!="00:00" && d.start.dateTime!=null){
+		var newEvent = $.extend(true, {}, d);;
+		newEvent.start.date = newEvent.end.date;
+		newEvent.start.time = "00:00";
+		newEvent.start.dateTime=newEvent.end.date+"T00:00"+newEvent.start.dateTime.substring(16);
+		newEvent.duration =(new Date(Date.parse(newEvent.end.dateTime.substring(0,16))) -
+							new Date(Date.parse(newEvent.start.dateTime.substring(0,16)))) / ( 1000 * 60 *60 );
+		newEvent.linkedFrom = i;
+		events.push(newEvent);
+		
+		
+		d.end.time = "00:00";
+		d.end.dateTime=d.end.date+"T00:00"+d.end.dateTime.substring(16);
+		d.duration =(new Date(Date.parse(d.end.dateTime.substring(0,16))) -
+					 new Date(Date.parse(d.start.dateTime.substring(0,16)))) / ( 1000 * 60 *60 );
+		d.linkedTo = i;
+	}});
+
+	return events;}
 
 
 

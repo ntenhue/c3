@@ -1,4 +1,4 @@
-function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
+function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	
 	$("#monthViewCanvas").empty();
 	
@@ -6,8 +6,8 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 	var months = d3.time.format("%m");
 	var dateNumber = d3.time.format("%d");
 	
-	var margin = {top: 20, right: 100, bottom: 30, left: 40},
-	    width = 791 - margin.left - margin.right,
+	var margin = {top: 20, right: 37, bottom: 30, left: 37},
+	    width = 970 - margin.left - margin.right,
 	    height = 300 - margin.top - margin.bottom;
 	
 	var x = d3.scale.ordinal()
@@ -24,7 +24,18 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 	var yAxis = d3.svg.axis()
 	    .scale(y)
 	    .orient("left")
-	    .tickFormat(d3.format(".2s"));
+	    .ticks(12);
+	
+	var xAxisGrid = d3.svg.axis()
+	    .scale(x)
+	    .ticks(5)
+	    .orient("bottom");
+	
+	var yAxisGrid = d3.svg.axis()
+	    .scale(y)
+	    .orient("left")
+	    .ticks(12);
+
 	
 	var svg = d3.select("#monthViewCanvas").append("svg")
 	    .attr("width", width + margin.left + margin.right)
@@ -35,121 +46,60 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 	
 	// single or multiple calendars selected
 	var k = null;
-	for ( var int = 0; int < selected.length; int++) {
-		if (k != null && selected[int] == true) {
-			k = null;
-			break;
+	for ( var int = 0; int < selected.length; int++) {	
+		if (k != null && selected[int] == true){k = null; break;}					
+		if (selected[int] == true){k = int;}
 		}
-		if (selected[int] == true) {
-			k = int;
-		}
-	}
 
-
-	
+	var colorspace1 = colorspace;
+	if (k!=null) {colorspace1 = [colorspace[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd", "#00b050", "#c00000"];}
+	var color = d3.scale.ordinal().range(colorspace1);
 
 	var data = [];
-	var startPoint = "2013-03-01";
-	var endPoint = "2013-03-30";
+	var startPoint = yearNumber+"-"+monthNumber;
+	var endPoint = yearNumber+"-"+monthNumber;
+	var cellsize = width/32;
 	
-	/*
 	
+		
 	if (k!=null) {	
-		//var data = calendarModel.updateBusyHours(calendarModel.calendars[k].events);	
 		data = $.extend(true, [], calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));
-		var color = d3.scale.ordinal()
-							.range([monthColors[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd",    "#00b050", "#c00000"]);
 	} else {
-		//var data = calendarModel.updateTotalBusyHours(calendarModel.calendars,selected);
-		for ( var k in selected) {	if (selected[int]) {
-		data.concat(calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));
+		for ( var k in selected) {	if (selected[k]) {
+		data = data.concat(calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));
 		}}
-		var color = d3.scale.ordinal()
-							.range(calendarModel.colors);
+
 		}
 	
-		
-		
-		var eventRect = svg.selectAll(".eventRect")
-		.data(data)
-		.enter()
-		.append("rect")
-		.attr("width", function(d,i) {return 33;})
-		.attr("height", function(d) { return d.duration*60*height/1440; })
-		.attr("y", function(d) { return (d.start.time.substring(0,2)*60+d.start.time.substring(3,5)*1)*height/1440; })
-		.attr("x", function(d,i) { return d.start.date.substring(0,2); })
-		.attr("style:opacity",0.7)
-		.style("fill", function(d) { return d.color; });
-		
-		
-		
-		*/
-	
-	
-		if (k!=null) {	
-			//var data = calendarModel.updateBusyHours(calendarModel.calendars[k].events);	
-			data = $.extend(true, [], calendarModel.calendars[k].busyHours);
-			var color = d3.scale.ordinal()
-								.range([monthColors[k],"#b9cde5","#99ffcc","#b3a2c7","#ff7c80","#f9d161","#feb46a","#00b0f0","#d9d9d9", "#4f81bd",    "#00b050", "#c00000"]);
-		} else {
-			//var data = calendarModel.updateTotalBusyHours(calendarModel.calendars,selected);
-			data = $.extend(true, [], calendarModel.totalBusyHours);		
-			var color = d3.scale.ordinal()
-								.range(calendarModel.colors);
-
-	}
-		   
-	data.forEach(function(d) {
-	    d.MAIN 			= d.hoursByColor[0];
-	    d.Lightblue 	= d.hoursByColor[1];
-	    d.Lightgreen 	= d.hoursByColor[2];
-	    d.Violet 		= d.hoursByColor[3];
-	    d.Lightred 		= d.hoursByColor[4];
-	    d.Gold 			= d.hoursByColor[5];
-	    d.Orange 		= d.hoursByColor[6];
-	    d.Turquoise 	= d.hoursByColor[7];
-	    d.Grey 			= d.hoursByColor[8];
-	    d.Blue 			= d.hoursByColor[9];
-	    d.Green 		= d.hoursByColor[10];
-	    d.Red 			= d.hoursByColor[11];
-	    });
-	
-	//Sets color domain names to names of properties from data[0]
-	//"date", "hours", "hoursByColor" are omitted
-	color.domain( d3.keys(data[0]).filter( function(key) {
-		if(key !== "date" && key !== "hours" && key !== "hoursByColor" && key !== "filterPassed" && key !== "filterPassedByColor"){return key;}
-		}));
-		  
-	data.forEach(function(d) {
-		var y0 = 0;
-		d.events = color.domain().map(function(name) {
-			return {name: name, y0: y0, y1: y0 += +d[name]}; 
-			});
-		d.total = d.events[d.events.length - 1].y1;
-		});
-		
-	
 	var amonth = []; for(i=1;i<32;i++){amonth.push(i);}
-		  	
 	x.domain(amonth);
-	y.domain([0, d3.max(data, function(d) { return d.total; })]);
-	  
-	var eventfulDays = data
-		.map(function(d) { 
-			if( months(dateFormat.parse(d.date)) == monthNumber 
-		    && d3.time.format("%Y")(dateFormat.parse(d.date)) == yearNumber){
-				return d; 
-				}
-			})
-		.filter(function(d){ if (typeof(d) == "object") { return d; }});
-		  
-		  
-		
+	y.domain([24,0]);
+	
 	svg.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
-		
+	.attr("class", "grid")
+	.attr("transform", "translate("+(cellsize/-2)+"," + height + ")")
+	.call(xAxisGrid
+			.tickSize(-height, 0, 0)
+	        .tickFormat("")
+	        );	
+	
+	svg.append("g")
+	.attr("class", "grid")
+	.call(yAxisGrid
+			.tickSize(-width, 0, 0)
+	        .tickFormat("")   );
+
+	svg.append("g")
+	.attr("class", "x axis")
+	.attr("transform", "translate(0," + height + ")")
+	.call(xAxis)
+	.append("text")
+	.attr("x", width-15)
+	.attr("dy", "-0.4em")
+	.style("text-anchor", "end")
+	.text("Date");
+
+
 	svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
@@ -159,55 +109,124 @@ function MonthView(selected, yearNumber, monthNumber, monthColors, callback){
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
 		.text("Hours");
+	
+	
 
+	data = data.sort(function(a,b) {return b.duration - a.duration;});
+
+	var eventsByDays = {};
+	data.forEach(function(d) {
+		if(eventsByDays[d.start.date]==null)eventsByDays[d.start.date]=[];
+		d.parallelDepth = 1;
+		d.parallelPosition = 1;
+		eventsByDays[d.start.date].push(d);
+		
+		for(var int=0; int<eventsByDays[d.start.date].length-1; int++){
+			if(!(Date.parse(d.end.dateTime)   <= Date.parse(eventsByDays[d.start.date][int].start.dateTime))
+			 &&!(Date.parse(d.start.dateTime) >= Date.parse(eventsByDays[d.start.date][int].end.dateTime))){
+				eventsByDays[d.start.date][eventsByDays[d.start.date].length-1].parallelDepth++;
+				eventsByDays[d.start.date][int].parallelDepth++;
+				eventsByDays[d.start.date][int].parallelPosition++;
+			}
+		}
+	});
+	
+
+	for (var day in eventsByDays){
+		for (var fr in eventsByDays[day]){
+			if(eventsByDays[day][fr].linkedTo!=null){
+				var nextdate = eventsByDays[day][fr].end.date;
+				for(var to in eventsByDays[nextdate]){
+					if (eventsByDays[nextdate][to].linkedFrom == eventsByDays[day][fr].linkedTo){
+						
+						eventsByDays[day][fr].parallelDepth += eventsByDays[nextdate][to].parallelDepth;
+						eventsByDays[nextdate][to].parallelDepth = eventsByDays[day][fr].parallelDepth;
+						
+						eventsByDays[day][fr].parallelPosition += eventsByDays[nextdate][to].parallelPosition;
+						eventsByDays[nextdate][to].parallelPosition = eventsByDays[day][fr].parallelPosition;
+						 
+					}
+				}
+			}
+		}	
+	}
+	
+	
+	for(day in eventsByDays){
+		var eventRect = svg.selectAll(".eventRect")
+		.data(eventsByDays[day])
+		.enter()
+		.append("rect")
+		.attr("width", function(d) {return cellsize/d.parallelDepth*d.parallelPosition;})
+		.attr("height", function(d) { return d.duration*60*height/1440; })
+		.attr("y", function(d) { return (d.start.time.substring(0,2)*60+d.start.time.substring(3,5)*1)*height/1440; })
+		.attr("x", function(d,i) { return (new Date(Date.parse(d.start.date)) - new Date(Date.parse(startPoint)))/1000/60/60/24*cellsize+cellsize-cellsize/d.parallelDepth*d.parallelPosition+cellsize*0.45; })
+		.attr("style:opacity",1)
+		.style("stroke",'#fff')
+		.style("fill", function(d) { return d.filterPassed? d.color : "#EEE"; })
+		.append("svg:title")
+		.text(function(d){ return d.summary; });
+			
+		}
+		
+	
+		
+		
+	
+
+	if (k!=null) {	
+		data = $.extend(true, [], calendarModel.calendars[k].busyHours);
+	} else {
+		data = $.extend(true, [], calendarModel.totalBusyHours);		
+		}
+
+		
+	data.forEach(function(d) {
+		var y0 = 0;
+		d.bricks = [];	
+		for (i in d.hoursByColor){d.bricks[i] = {filterPassed: d.filterPassedByColor[i], y0: y0, y1: y0 += d.hoursByColor[i]};}});
+
+//	var amonth = []; for(i=1;i<32;i++){amonth.push(i);}
+		  	
+	var filteredForThisMonth = data
+		.map(function(d) { if( months(dateFormat.parse(d.date)) == monthNumber 
+						   && d3.time.format("%Y")(dateFormat.parse(d.date)) == yearNumber){
+						   		return d; }})
+		.filter(function(d){ if (typeof(d) == "object") { return d; }});
+		  
+//	x.domain(amonth);
+//	y.domain([0, d3.max(filteredForThisMonth, function(d) { return d.hours; })]);		  
+		
+
+	
+	/*
 	var state = svg.selectAll(".state")
-		.data(eventfulDays)
+		.data(filteredForThisMonth)
 		.enter()
 		.append("g")
 		.attr("class", "g")
 		.attr("transform", function(d) { return "translate(" + dateNumber(dateFormat.parse(d.date))*20 + ",0)"; });
 	
 	state.selectAll("rect")
-		.data(function(d) { return d.events; })
+		.data(function(d) { return d.bricks; })
 		.enter()
 		.append("rect")
 		.attr("width", 13)
 		.attr("y", function(d) { return y(d.y1); })
 		.attr("height", function(d) { return y(d.y0) - y(d.y1); })
-		.style("fill", function(d) { return color(d.name); });
+		.style("fill", function(d,i) { return d.filterPassed? color.range()[i] : "#EEE"; });
 		
 
 	if (k!=null){	// set the Legend
-/*
-		var legend = svg.selectAll(".legend")
-			.data(color.domain().slice().reverse())
-			.enter().append("g")
-			.attr("class", "legend")
-			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-	      
-		legend.append("rect")
-			.attr("x", width)
-			.attr("y", 10)
-			.attr("width", 13)
-			.attr("height", 13)
-			.style("fill", color);
-	
-		legend.append("text")
-			.attr("x", width + 20)
-			.attr("y", 19)
-			.attr("dy", ".35em")
-			.style("text-anchor", "start")
-			.text(function(d) { return d; });
-*/	  
-		
 		var legendComment = svg.append("g")
 			.append("text")
 			.attr("x", width-200)
 			.attr("y", 0)
 			.style("text-anchor", "start")
 			.text("Colored by events");
-		
 	  	} // set the Legend
+
+*/
 
 	d3.select(self.frameElement).style("height", "2910px");
 	callback();
@@ -233,3 +252,25 @@ function monthViewUpdate(){
 		}
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
