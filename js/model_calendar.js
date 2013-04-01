@@ -20,10 +20,10 @@ function CalendarModel(appModel){
 
 this.addCalendars = function (items) {	
 	for (var i in items){
-		items.events = [];
-		items.updated = "";
-		items.busyHours = [];
-		//items.selected = items.selected != null? true:false;
+		items[i].events = [];
+		items[i].updated = "";
+		items[i].busyHours = [];
+		items[i].selected = items[i].selected==true?true:false; //if null then override with false
 		}
 	
 	//for(var i in items) {if (items[i].summary == "Hands on the right place" || items[i].summary == "Angie"){items.splice(i,1);	}}
@@ -37,18 +37,44 @@ this.addCalendars = function (items) {
 
 	appModel.setCldrStatus(null,"initiated", this.calendars.length);
 	
-	for(var i in this.calendars){appModel.setSelectedCldrs(i,this.calendars[i].selected==true?true:false);}
+	for(var i in this.calendars){appModel.setSelectedCldrs(i,this.calendars[i].selected);}
 	appModel.setCalendarsLoaded(true); // this will trigger the observer of app model
 	}
 
 
 this.addEvents = function (k, items, upd, nextPageToken) {	
-	this.calendars[k].events = this.calendars[k].events.concat(items);
-
 	var last = items[items.length-1].start;
 	if (last.date == null)last.date = last.dateTime.substring(0,10);
 	appModel.setCldrStatus(k,"<br>loading events... "+last.date);
 	
+	if (this.calendars[k].updated==""){ // new pack of events
+		
+		for (var i=0; i<items.length; i++){	if (items[i].status == "cancelled"){items.splice(i,1); i--; }}
+		this.calendars[k].events = this.calendars[k].events.concat(items);	
+		
+	}else{	//updates		
+		
+		for (var i in items){
+			
+			
+			var found = false;
+			for (var j=0; j<this.calendars[k].events.length; j++){
+				if (this.calendars[k].events[j].id == items[i].id){
+					
+					
+					if (this.calendars[k].events[j].linkedFrom!= null){
+						this.calendars[k].events.splice(j,1);
+					}else{	
+						this.calendars[k].events[j] = items[i]; 
+						if (items[i].status == "cancelled"){this.calendars[k].events.splice(j,1); j--;}
+						found = true;
+					}
+					}
+			}
+			if (!found && items[i].status != "cancelled")this.calendars[k].events.push(items[i]);
+		}
+		
+	}
 	
 	if (nextPageToken==null){
 		// if this is a last or the only page of events
@@ -217,8 +243,10 @@ this.getEventsInRange = function(events, fromAsked,tillAsked){
 this.fillEmptyValues = function (calendar) {
 	var events = calendar.events;
 	
+	
+	
 	for (var i in events){	
-		if (events[i].colorId == null) {
+		if (events[i].colorId == null || events[i].colorId == 0) {
 			events[i].colorId = 0; 
 			events[i].color = calendar.backgroundColor; 
 			}else{
@@ -253,7 +281,7 @@ this.fillEmptyValues = function (calendar) {
 
 this.splitEvents = function (events) {
 	events.forEach(function(d,i) {
-	if(d.start.date != d.end.date && d.end.time!="00:00" && d.start.dateTime!=null){
+	if(d.start.date != d.end.date && d.end.time!="00:00" && d.start.dateTime!=null && d.linkedTo==null	){
 		var newEvent = $.extend(true, {}, d);;
 		newEvent.start.date = newEvent.end.date;
 		newEvent.start.time = "00:00";
@@ -268,7 +296,7 @@ this.splitEvents = function (events) {
 		d.end.dateTime=d.end.date+"T00:00"+d.end.dateTime.substring(16);
 		d.duration =(new Date(Date.parse(d.end.dateTime.substring(0,16))) -
 					 new Date(Date.parse(d.start.dateTime.substring(0,16)))) / ( 1000 * 60 *60 );
-		d.linkedTo = i;
+		d.linkedTo = events.length-1;
 	}});
 
 	return events;}

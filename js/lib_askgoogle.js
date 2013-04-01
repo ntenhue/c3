@@ -29,7 +29,7 @@ function AskGoogle(calendarModel) {
 	 * if updates found or if there is no events loaded then 
 	 * 
 	 */	
-	this.checkUpdatesAndLoad = function(k) {
+/*	this.checkUpdatesAndLoad = function(k) {
 		appModel.setCldrStatus(k,"checking...");
 		
 		this.request = gapi.client.calendar.events.list({
@@ -41,27 +41,29 @@ function AskGoogle(calendarModel) {
 			//console.log(calendarModel.calendars[k].summary, "checking calendar updates:", resp.updated);
 			
 			
-			if(Date.parse(resp.updated) <= Date.parse(calendarModel.calendars[k].updated)
-			&& calendarModel.calendars[k].events != null) {
-				//console.log(calendarModel.calendars[k].summary, "already up-to-date")
-				appModel.setCldrStatus(k,"updated");
-				appModel.setWorkingStatus("");
-				
-				
+			if (calendarModel.calendars[k].events == null || calendarModel.calendars[k].updated ==""){
+					//console.log(calendarModel.calendars[k].summary, "no events found")
+					appModel.setCldrStatus(k,"loading...");
+					askGoogle.loadEvents(k,null,null);				
 			}else{
-				console.log(calendarModel.calendars[k].summary, "updates found"); 
 				
-				appModel.setCldrStatus(k,"clearing...");
-				calendarModel.clearEvents(k);
-				
-				appModel.setCldrStatus(k,"loading...");
-				askGoogle.loadEvents(k,null);
-				
-				
+				if(Date.parse(resp.updated) <= Date.parse(calendarModel.calendars[k].updated)) {
+					//console.log(calendarModel.calendars[k].summary, "already up-to-date")
+					appModel.setCldrStatus(k,"updated");
+					appModel.setWorkingStatus("");	
+				}else{
+					console.log(calendarModel.calendars[k].summary, "updates found"); 
+					appModel.setCldrStatus(k,"loading...");
+					askGoogle.loadEvents(k,null,calendarModel.calendars[k].updated);
 				}
+			}
 			});
-		}
 		
+		appModel.setCldrStatus(k,"loading...");
+		askGoogle.loadEvents(k,null);	
+		
+		}
+		*/
 		
 	
 	/*
@@ -71,32 +73,45 @@ function AskGoogle(calendarModel) {
 	 * if there are more pages to load, function calls itself as a recursive
 	 * 
 	 */	
-	// TODO: check this, optimize, remove magic number if possible
 	this.loadEvents = function(k, pageToken) {
+
 		this.request = gapi.client.calendar.events.list({
 			'calendarId': calendarModel.calendars[k].id, 
 			'maxResults': 250,
 			'singleEvents': true,
-			'showDeleted': false,
+			'showDeleted': true,
 			'orderBy': 'startTime',
 			'timeMin': (appModel.yearFirst)+'-01-01T00:00:00+01:00', 
 			'timeMax': (appModel.yearLast+1)+'-01-01T00:00:00+01:00', //+1 because it is exclusive
-			'fields': 'items(colorId,start,end,summary,id,location,htmlLink),nextPageToken,updated',
+			'fields': 'items(colorId,start,end,summary,id,location,htmlLink,status),nextPageToken,updated',
+			'updatedMin': (calendarModel.calendars[k].updated==""?null:calendarModel.calendars[k].updated),
 			'pageToken': pageToken
 			});
 		
 		
 		this.request.execute(function(resp){
 			console.log(calendarModel.calendars[k].summary, "received events list:", resp); 
-			if (resp.items != null)calendarModel.addEvents(k,resp.items,resp.updated,resp.nextPageToken); 
+			
+			if (resp.items!=null && resp.items.length>0 && 
+				resp.updated.substring(0,19)!=calendarModel.calendars[k].updated.substring(0,19)){
+				calendarModel.addEvents(k,resp.items,resp.updated,resp.nextPageToken);
+			}else{
+				appModel.setWorkingStatus("");				
+				appModel.setCldrStatus(k,"updated");
+			}
+			
 			if (resp.nextPageToken != null)askGoogle.loadEvents(k,resp.nextPageToken);
 				// if there are more pages to show,
 				// the function calls itself with a nextPageToken
 				// recursion is stopped on the last page, 
 				// since nextPageToken of it is NULL
 			});
-		
+
 		}// function loadEvents
+	
+	
+	
+	
 	
 	
 	/*

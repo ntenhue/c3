@@ -31,9 +31,8 @@ this.update = function(what) {
 		var see = 0;
 		for (var i in appModel.selectedCldrs) { if (appModel.selectedCldrs[i])see=1; }
 		for (var i in appModel.selectedCldrs) { if  
-					   (appModel.cldrStatus[i].substring(0,8) == "<br>load"||
-						appModel.cldrStatus[i] == "loading..." ||
-						appModel.cldrStatus[i] == "checking...")see=0;}
+					   (appModel.cldrStatus[i].substring(0,8) == "<br>load" /*||
+						appModel.cldrStatus[i] == "loading..."*/ )see=0;}
 		if (see!=0) {		
 			appModel.setWorkingStatus("calculating occupancy...");
 			calendarModel.totalBusyHours = calendarModel.updateTotalBusyHours(calendarModel.calendars,	appModel.selectedCldrs);
@@ -79,7 +78,8 @@ function AppCtrl(appModel, appView) {
 		if (what == "calendars loaded") {
 			for ( var k in appModel.selectedCldrs) {
 				appModel.setWorkingStatus("loading...");
-				askGoogle.checkUpdatesAndLoad(k);
+				appModel.setCldrStatus(k,"loading...");
+				askGoogle.loadEvents(k,null);	
 				}//for
 			}
 		

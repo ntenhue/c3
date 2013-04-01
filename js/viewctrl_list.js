@@ -110,8 +110,7 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 		 */
 		if (what == "cldrStatus") {
 			for ( var i in this.cldrList)
-			if (appModel.cldrStatus[i] == "loading..." ||
-				appModel.cldrStatus[i].substring(0,8) == "<br>load" )	{
+			if (appModel.cldrStatus[i].substring(0,8) == "<br>load" )	{
 				// show only when it looks like "loading" or something
 				this.cldrList[i].status.html(appModel.getCldrStatus(i));
 			}else{
@@ -175,7 +174,8 @@ function iWannaChooseCalendars(event) {
 			appModel.cldrStatus[k] == "checking...")){
 			
 			appModel.setWorkingStatus("loading...");
-			askGoogle.checkUpdatesAndLoad(k);
+			appModel.setCldrStatus(k,"loading...");
+			askGoogle.loadEvents(k,null);	
 			}
 		}//for
 	

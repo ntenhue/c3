@@ -65,14 +65,12 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	if (k!=null) {	
 				if((appModel.selectedCldrs[k]) &&
 		          !(appModel.cldrStatus[k].substring(0,8) == "<br>load"||
-					appModel.cldrStatus[k] == "loading..." ||
-					appModel.cldrStatus[k] == "checking...")) {
+					appModel.cldrStatus[k] == "loading...")) {
 		data = $.extend(true, [], calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));}
 	} else {
 		for ( var k in selected) {	if((appModel.selectedCldrs[k]) &&
 				          !(appModel.cldrStatus[k].substring(0,8) == "<br>load"||
-							appModel.cldrStatus[k] == "loading..." ||
-							appModel.cldrStatus[k] == "checking...")) {
+							appModel.cldrStatus[k] == "loading...")) {
 		data = data.concat(calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));
 		}}
 
@@ -139,19 +137,30 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	}});
 	
 
+	
 	for (var day in eventsByDays){
+	var stackD = 0;
+	var stackP = 0;
+	var stackC = 1;
 		for (var fr in eventsByDays[day]){
 			if(eventsByDays[day][fr].linkedTo!=null){
-				var nextdate = eventsByDays[day][fr].end.date;
-				for(var to in eventsByDays[nextdate]){
-					if (eventsByDays[nextdate][to].linkedFrom == eventsByDays[day][fr].linkedTo){
+				var nextday = eventsByDays[day][fr].end.date;
+				
+				for(var to in eventsByDays[nextday]){
+					if (eventsByDays[nextday][to].id == eventsByDays[day][fr].id){
 						
-						eventsByDays[day][fr].parallelDepth += eventsByDays[nextdate][to].parallelDepth;
-						eventsByDays[nextdate][to].parallelDepth = eventsByDays[day][fr].parallelDepth;
+						stackD += (eventsByDays[day][fr].parallelDepth + eventsByDays[nextday][to].parallelDepth) * stackC;
+						eventsByDays[nextday][to].parallelDepth = stackD;
+						eventsByDays[day][fr].parallelDepth = stackD;
 						
-						eventsByDays[day][fr].parallelPosition += eventsByDays[nextdate][to].parallelPosition;
-						eventsByDays[nextdate][to].parallelPosition = eventsByDays[day][fr].parallelPosition;
-						 
+						stackP += eventsByDays[day][fr].parallelPosition + eventsByDays[nextday][to].parallelPosition ;
+						eventsByDays[nextday][to].parallelPosition = stackP;
+						eventsByDays[day][fr].parallelPosition = stackP;
+						
+						stackC+=1;
+						console.log(stackD, stackP);
+						
+						break; 
 					}
 				}
 			}
@@ -172,7 +181,7 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 		.style("stroke",'#fff')
 		.style("fill", function(d) { return d.filterPassed? d.color : "#EEE"; })
 		.append("svg:title")
-		.text(function(d){ return d.summary; });
+		.text(function(d){ return d.summary + " " + (d.start.time) + " - " + (d.end.time); });
 			
 		}
 		
