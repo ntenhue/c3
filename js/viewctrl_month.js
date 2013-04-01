@@ -63,9 +63,16 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	
 		
 	if (k!=null) {	
-		data = $.extend(true, [], calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));
+				if((appModel.selectedCldrs[k]) &&
+		          !(appModel.cldrStatus[k].substring(0,8) == "<br>load"||
+					appModel.cldrStatus[k] == "loading..." ||
+					appModel.cldrStatus[k] == "checking...")) {
+		data = $.extend(true, [], calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));}
 	} else {
-		for ( var k in selected) {	if (selected[k]) {
+		for ( var k in selected) {	if((appModel.selectedCldrs[k]) &&
+				          !(appModel.cldrStatus[k].substring(0,8) == "<br>load"||
+							appModel.cldrStatus[k] == "loading..." ||
+							appModel.cldrStatus[k] == "checking...")) {
 		data = data.concat(calendarModel.getEventsInRange(calendarModel.calendars[k].events, startPoint, endPoint));
 		}}
 
@@ -106,7 +113,7 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 		.append("text")
 		.attr("transform", "rotate(-90)")
 		.attr("y", 6)
-		.attr("dy", ".71em")
+		.attr("dy", ".3em")
 		.style("text-anchor", "end")
 		.text("Hours");
 	
