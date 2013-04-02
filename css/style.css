@@ -248,8 +248,12 @@ margin-right: 8px;
 background-color: #F5BF70;
 }
 
-
-
+.monthTitle {
+text-anchor: end;
+font: 48px Tahoma;
+fill: #ccc;
+font-weight:100;
+}
 
 .monthLabel {
 fill:black;
@@ -259,7 +263,7 @@ text-decoration:underline;
 }
 
 .monthLabelMouse {
-fill:#559393;
+fill:#FF0000;
 }
 
 .label {
@@ -318,11 +322,11 @@ font: 10px Tahoma;
   position: absolute;
   display: block;
   text-align: center;
-  width: 340px;
+  width: 300px;
   height: auto;
   padding: 8px;
   font-family: Tahoma, Helvetica, Arial, Verdana;
-  font-size: 0;
+  font-size: 12px;
   background: #FFFFFF;
   border: solid 1px #aaa;
   visibility: hidden;
@@ -330,6 +334,15 @@ font: 10px Tahoma;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+}
+
+.tooltipTitle {
+	height: 20px;
+	width: 200px;
+	margin: 5px;
+	color: #666666;
+	font: 12px Tahoma;
+	text-align: left;
 }
 
 .tooltipTable {
@@ -344,6 +357,7 @@ font: 10px Tahoma;
 
 .leftTooltipColumn {
 	display: inline-block;
+	text-align: left;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -362,7 +376,6 @@ font: 10px Tahoma;
 a:link {
 	text-decoration: none;
 	color: #666666;
-	text-decoration: none;
 	margin-left: 3px;
 }
 a:hover {

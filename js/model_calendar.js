@@ -102,7 +102,7 @@ this.clearCalendars = function () {
 
 this.clearEvents = function (k) {	
 	this.calendars[k].events=[];
-	this.calendars[k].updated = [];
+	this.calendars[k].updated = "";
 	this.calendars[k].busyHours = [];
 	appModel.setCldrStatus(k,"events cleared");
 	}	

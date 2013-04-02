@@ -22,51 +22,6 @@ function AskGoogle(calendarModel) {
 	
 	
 	/*
-	 * checkUpdatesAndLoad
-	 * function calls Google and asks for "updated" timestamp of calendar k
-	 * then it compares it with the timestamp stored at the previous successful load
-	 * 
-	 * if updates found or if there is no events loaded then 
-	 * 
-	 */	
-/*	this.checkUpdatesAndLoad = function(k) {
-		appModel.setCldrStatus(k,"checking...");
-		
-		this.request = gapi.client.calendar.events.list({
-			'calendarId': calendarModel.calendars[k].id, 
-			'fields': 'updated',
-			});
-		
-		this.request.execute(function(resp) {
-			//console.log(calendarModel.calendars[k].summary, "checking calendar updates:", resp.updated);
-			
-			
-			if (calendarModel.calendars[k].events == null || calendarModel.calendars[k].updated ==""){
-					//console.log(calendarModel.calendars[k].summary, "no events found")
-					appModel.setCldrStatus(k,"loading...");
-					askGoogle.loadEvents(k,null,null);				
-			}else{
-				
-				if(Date.parse(resp.updated) <= Date.parse(calendarModel.calendars[k].updated)) {
-					//console.log(calendarModel.calendars[k].summary, "already up-to-date")
-					appModel.setCldrStatus(k,"updated");
-					appModel.setWorkingStatus("");	
-				}else{
-					console.log(calendarModel.calendars[k].summary, "updates found"); 
-					appModel.setCldrStatus(k,"loading...");
-					askGoogle.loadEvents(k,null,calendarModel.calendars[k].updated);
-				}
-			}
-			});
-		
-		appModel.setCldrStatus(k,"loading...");
-		askGoogle.loadEvents(k,null);	
-		
-		}
-		*/
-		
-	
-	/*
 	 * loadEvents
 	 * function calls Google and asks for events with specified settings
 	 * if the return is not empty, then the model is updated
@@ -100,7 +55,14 @@ function AskGoogle(calendarModel) {
 				appModel.setCldrStatus(k,"updated");
 			}
 			
-			if (resp.nextPageToken != null)askGoogle.loadEvents(k,resp.nextPageToken);
+			if (resp.nextPageToken != null){
+				if (appModel.selectedCldrs[k]) {
+					askGoogle.loadEvents(k,resp.nextPageToken);
+				}else{
+					console.log(calendarModel.calendars[k].summary, "DOWNLOADING CANCELLED"); 
+					calendarModel.clearEvents(k);
+				}
+			}
 				// if there are more pages to show,
 				// the function calls itself with a nextPageToken
 				// recursion is stopped on the last page, 

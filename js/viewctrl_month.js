@@ -114,8 +114,13 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 		.attr("dy", ".3em")
 		.style("text-anchor", "end")
 		.text("Hours");
+
 	
-	
+	var monthNameLabel = svg.append("text")
+	.attr("transform" , "translate("+(width-20)+",60)")
+	.attr("class","monthTitle")
+	.text(d3.time.format("%B")(new Date(Date.parse(startPoint))));
+		
 
 	data = data.sort(function(a,b) {return b.durationUnsplit - a.durationUnsplit;});
 
@@ -183,9 +188,9 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 			
 		}
 		
+
 	
-		
-		
+
 	
 
 	if (k!=null) {	

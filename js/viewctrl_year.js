@@ -47,10 +47,10 @@ function yearView(selected, colorspace, callback) {
 		.attr("id", function(d) { return "year" + d; }); 
 	
 	var yearLabel = svg.append("text")
-		.attr("transform" , "translate(-25," + cellSize * 3.5 + ")rotate(-90)")
+		//.attr("transform" , "translate(-25," + cellSize * 3.5 + ")rotate(-90)")
+		.attr("transform","translate(-9,-19)")
 		.style("text-anchor", "middle")
 		.text(function(d) {return d;});
-
 
 	var dateLabel = svg.selectAll(".label")
 		.data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -347,8 +347,8 @@ if (appModel.complexity == "complex") {
 	if (tooltip == null) {		
 		tooltip = d3.select("body")
 		.append("div")
-		.attr("class", "tooltip")
-		.html(TOOLTIP_TABLE_HTML);
+		.attr("class", "tooltip");
+	//	.html(TOOLTIP_TABLE_HTML);
 		
 		// apply close button
 		var table = document.getElementById("tooltiptable");
@@ -434,7 +434,8 @@ function yearViewUpdate() {
  */
 function monthLabelController(event, monthLabel, selected, colorspace) {
 	//var monthLabel = event.data.monthLabel;
-
+	$(monthLabel).css("fill","#FF0000");
+	
 	if (event.type == "mouseover") {		
 		$(monthLabel).css("fill","#FF0000");
 	} else if (event.type == "mouseout") {
@@ -464,7 +465,7 @@ function dayController(day, events, mouseEvent, tooltip) {
 			.style("visibility", "visible");      
 		tooltip.style("left", (mouseEvent.pageX>800? mouseEvent.pageX-300:mouseEvent.pageX) + "px")
 			.style("top", (mouseEvent.pageY - 0) + "px");  
-		buildTooltipHTML(events, tooltip);
+		buildTooltipHTML(events, tooltip, day.id);
 	}
 }
 
@@ -474,44 +475,62 @@ function closeTooltip() {
 		.style("visibility", "hidden");
 }
 
-function buildTooltipHTML(wrappers, tooltip) {
-	var table = document.getElementById("tooltiptable");
-	var tbody = document.createElement('tbody');
+function buildTooltipHTML(wrappers, tooltip, date) {
+	
+	$(tooltip[0][0]).empty();
+	var tooltip = $(tooltip[0][0]);
+	
+	var table = $("<table>");
+	var theader = $("<theader>");
+	var tbody = $("<tbody>");	
+	
+	var today = new Date(Date.parse(date));
+	var title = $("<div>")
+		.addClass("tooltipTitle")
+		.text(d3.time.format("%d")(today) + " " + d3.time.format("%B")(today) + " " + d3.time.format("%Y")(today));
+	theader.append(title);
+	
 	for ( var i = 0; i < wrappers.length; i++) {
 		var event = wrappers[i].data;
-		var row = tbody.insertRow(i);
-		$(row).addClass("tooltipTableRow");
-		var data1 = row.insertCell(0);
-		$(data1).addClass("leftTooltipColumn");
-
+		var row = $("<tr>")
+			.addClass("tooltipTableRow");
+		var data1 = $("<td>")
+			.addClass("leftTooltipColumn");
+	
+		var link = $("<a>")
+			.attr("target", "_blank")
+			.attr("href", event.htmlLink)
+			.css("color",wrappers[i].color)
+			.text(event.summary==""? "(no title)":event.summary);
 		
-		var link = document.createElement('a');
-		$(link).attr("target", "_blank")
-				.attr("href", event.htmlLink)
-				.text(event.summary==""? "(no title)":event.summary);
-		data1.appendChild(link);
+		data1.append(link);
 		
 
-		data1.style.color = wrappers[i].color;
-		var data2 = row.insertCell(1);
-		$(data2).addClass("rightTooltipColumn");
-		if (event.start != null && event.end != null) {			
-			data2.appendChild (document.createTextNode(event.start.time + " - " + event.end.time))
-		}
-		data2.style.color = wrappers[i].color;
+		var data2 = $("<td>")
+			.addClass("rightTooltipColumn")
+			.css("color",wrappers[i].color);
+		
+		data2.append(event.allDayEvent?"All day":(event.start.time + " - " + event.end.time));
+
+		row.append(data1,data2);
+		tbody.append(row);
 	}
-	table.tBodies[0].parentNode.replaceChild(tbody, table.tBodies[0]);
+	
+	
 	if ($('#img_close_box').length == 0) {		
-		var a = document.createElement('a');
-		var img = document.createElement("img");
-		img.src = "img/tooltip_img.png";
-		a.appendChild(img);
-		a.id = "img_close_box";
-		a.href = "javascript:closeTooltip()";
-		$(a).addClass("tooltipCloseButton");
-		$(table).append(a);
-		tooltip.html(table.outerHTML);
+		var a = $("<a>")
+			.addClass("tooltipCloseButton")
+			.attr("href", "javascript:closeTooltip()");
+		var img = $("<img>")
+			.attr("src", "img/tooltip_img.png")
+			.appendTo(a);
+		tooltip.append(a);
 	}
+	
+	table.append(theader, tbody);
+	tooltip.append(table);
+
+	
     
 }
 
