@@ -117,7 +117,7 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 	
 	
 
-	data = data.sort(function(a,b) {return b.duration - a.duration;});
+	data = data.sort(function(a,b) {return b.durationUnsplit - a.durationUnsplit;});
 
 	var eventsByDays = {};
 	data.forEach(function(d) { if(!d.allDayEvent && (!appModel.searchHideFiltered || d.filterPassed)){
@@ -158,8 +158,6 @@ function MonthView(selected, yearNumber, monthNumber, colorspace, callback){
 						eventsByDays[day][fr].parallelPosition = stackP;
 						
 						stackC+=1;
-						console.log(stackD, stackP);
-						
 						break; 
 					}
 				}

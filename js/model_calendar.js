@@ -270,6 +270,8 @@ this.fillEmptyValues = function (calendar) {
 							new Date(Date.parse(events[i].start.date + "T" + events[i].start.time)) ) 
 							/ ( 1000 * 60 *60 );
 		
+		if (events[i].linkedTo == null && events[i].linkedFrom == null)events[i].durationUnsplit = events[i].duration;
+		
 		if (events[i].summary == null) events[i].summary = ""; 
 		events[i].filterPassed = false; 
 		
