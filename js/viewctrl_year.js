@@ -22,8 +22,9 @@ function yearView(selected, colorspace, callback) {
 	
 	
 	
-	$("#yearViewCanvas").empty();
-	
+	//$("#yearViewCanvas").empty();
+	d3.selectAll("#yearViewCanvas > svg").remove();
+
 	var width = 970, height = 180, cellSize = 17; 
 	var day = d3.time.format("%w"), 
 	week = d3.time.format("%U"), 

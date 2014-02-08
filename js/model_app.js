@@ -15,21 +15,22 @@ function AppModel() {
 	/***************************************************************************
 	 * APP PROPERTIES
 	 **************************************************************************/
-	
+	this.now = new Date();
+
 	this.loginStatus = false;
 	this.libraryStatus = false;
 	this.calendarsLoaded = false;
 	
 //	this.searchGoing = false;
-	
-	this.yearFirst = 2012; // hardcoded but prepared to become dynamic
-	this.yearLast = 2013;
+
+	this.yearFirst = this.now.getFullYear() - 1;
+	this.yearLast = this.now.getFullYear();
 
 	this.complexity = "simple";
 	this.lightestColorForHours = 0.0;
 	this.strongestColorForHours = 12.0;
 	
-	this.selectedYear;
+	this.selectedYear = this.now.getFullYear();
 	this.selectedMonth;
 	
 	this.searchString="";
@@ -82,6 +83,11 @@ function AppModel() {
 		this.workingStatus = value;
 		this.notifyObservers("workingStatus");
 	}
+    this.setYearFrame = function(yearFirst, yearLast){
+        if (yearFirst!=null) this.yearFirst = yearFirst;
+        if (yearLast!=null)  this.yearLast = yearLast;
+        this.notifyObservers("updated yearframe");
+    }
 
 	/***************************************************************************
 	 * GETTERS

@@ -79,10 +79,18 @@ function AppCtrl(appModel, appView) {
 			for ( var k in appModel.selectedCldrs) {
 				appModel.setWorkingStatus("loading...");
 				appModel.setCldrStatus(k,"loading...");
-				askGoogle.loadEvents(k,null);	
+				askGoogle.loadEvents(k,null,null);
 				}//for
 			}
-		
+
+		if (what == "updated yearframe") {
+			for ( var k in appModel.selectedCldrs) {
+                yearViewUpdate();
+				appModel.setWorkingStatus("loading...");
+				appModel.setCldrStatus(k,"loading...");
+				askGoogle.loadEvents(k,null,null);
+				}//for
+			}
 		
 	}//update
 }

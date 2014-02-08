@@ -22,6 +22,7 @@ this.addCalendars = function (items) {
 	for (var i in items){
 		items[i].events = [];
 		items[i].updated = "";
+        items[i].dataAvailable = {};
 		items[i].busyHours = [];
 		items[i].selected = items[i].selected==true?true:false; //if null then override with false
 		}
@@ -42,50 +43,69 @@ this.addCalendars = function (items) {
 	}
 
 
-this.addEvents = function (k, items, upd, nextPageToken) {	
-	var last = items[items.length-1].start;
-	if (last.date == null)last.date = last.dateTime.substring(0,10);
-	appModel.setCldrStatus(k,"<br>loading events... "+last.date);
-	
-	if (this.calendars[k].updated==""){ // new pack of events
-		
-		for (var i=0; i<items.length; i++){	if (items[i].status == "cancelled"){items.splice(i,1); i--; }}
-		this.calendars[k].events = this.calendars[k].events.concat(items);	
-		
-	}else{	//updates		
-		
-		for (var i in items){
-			
-			
-			var found = false;
-			for (var j=0; j<this.calendars[k].events.length; j++){
-				if (this.calendars[k].events[j].id == items[i].id){
-					
-					
-					if (this.calendars[k].events[j].linkedFrom!= null){
-						this.calendars[k].events.splice(j,1);
-					}else{	
-						this.calendars[k].events[j] = items[i]; 
-						if (items[i].status == "cancelled"){this.calendars[k].events.splice(j,1); j--;}
-						found = true;
-					}
-					}
-			}
-			if (!found && items[i].status != "cancelled")this.calendars[k].events.push(items[i]);
-		}
-		
-	}
-	
-	if (nextPageToken==null){
-		// if this is a last or the only page of events
-		this.calendars[k].updated= upd;
-		this.calendars[k].events = this.fillEmptyValues(this.calendars[k]);
-		this.calendars[k].events = this.splitEvents(this.calendars[k].events);
-		this.calendars[k].events = this.filterEvents(this.calendars[k].events);
-		this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k]);
-		appModel.setCldrStatus(k,"events added");	
-		}
-	}	
+
+
+
+this.addEvents = function (k, items, upd, year, nextPageToken) {
+
+
+    var last = items[items.length - 1].start;
+    if (last.date == null) last.date = last.dateTime.substring(0, 10);
+    appModel.setCldrStatus(k, "<br>loading events... " + last.date);
+
+    // check if the k calendar for this year was ever downloaded
+    if (this.calendars[k].dataAvailable[year] == null) {
+
+        // remove "cancelled" events from package
+        for (var i = 0; i < items.length; i++) {if (items[i].status == "cancelled") { items.splice(i, 1); i--; } }
+        // concatinate current array of events with the received package
+        this.calendars[k].events = this.calendars[k].events.concat(items);
+
+    //some events were loaded previously - need to update them
+    } else {
+
+        // for every received item
+        for (var i in items) {
+
+            // search the calendar for duplicates
+            var found = false;
+            for (var j = 0; j < this.calendars[k].events.length; j++) {
+
+                // if the event already exists in calendar
+                if (this.calendars[k].events[j].id == items[i].id) {
+
+
+                    if (this.calendars[k].events[j].linkedFrom != null) {
+
+                        this.calendars[k].events.splice(j, 1);
+
+                    // if the received event is a standalone event
+                    } else {
+
+                        // overwriting the existing event
+                        this.calendars[k].events[j] = items[i];
+
+                        // if the existing event was cancelled - remove it from the model
+                        if (items[i].status == "cancelled") { this.calendars[k].events.splice(j, 1); j--;}
+
+                        // setting the flag: no need to add this event once mode
+                        found = true;
+                    }
+                }
+            }
+
+            // if it is not a duplicate and not a cancelled event then save it to model
+            if (!found && items[i].status != "cancelled") this.calendars[k].events.push(items[i]);
+
+        }
+
+    }
+
+    if (nextPageToken==null){
+        this.calendars[k].dataAvailable[year] = upd;
+        this.calendars[k].updated = upd;
+    }
+}
 
 
 /***************************************************************************
@@ -103,6 +123,7 @@ this.clearCalendars = function () {
 this.clearEvents = function (k) {	
 	this.calendars[k].events=[];
 	this.calendars[k].updated = "";
+    this.calendars[k].dataAvailable = {};
 	this.calendars[k].busyHours = [];
 	appModel.setCldrStatus(k,"events cleared");
 	}	
@@ -121,6 +142,24 @@ this.getBusyHours = function (k) { return k != null ? this.calendars[k].busyHour
 /***************************************************************************
  * METHODS OVER DATA
  **************************************************************************/
+
+
+
+/*
+ * prepareData
+ */
+this.prepareData = function(k){
+    console.log("preparing data for " + this.calendars[k].summary)
+    this.calendars[k].events = this.fillEmptyValues(this.calendars[k]);
+    this.calendars[k].events = this.splitEvents(this.calendars[k].events);
+    this.calendars[k].events = this.filterEvents(this.calendars[k].events);
+    this.calendars[k].busyHours = this.updateBusyHours(this.calendars[k]);
+    appModel.setCldrStatus(k, "events added");
+}
+
+
+
+
 
 /*
  * findCalendarBySummary

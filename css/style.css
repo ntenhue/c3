@@ -233,7 +233,7 @@ h1{
 
 
 
-.complexLabel {
+.complexLabel, .historyLabel {
 font: 12px Tahoma;
 background-color: #eee;
 cursor: pointer;
@@ -244,7 +244,7 @@ padding: 2px 10px 2px 10px;
 margin-right: 8px;
 }
 
-.complexLabel-active{
+.complexLabel-active, .historyLabel-active{
 background-color: #F5BF70;
 }
 

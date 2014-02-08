@@ -127,9 +127,9 @@ function ListView(parent /*JQuery object*/, calendarModel) {
 			this.statusTextSpan.html(appModel.workingStatus);
 			
 			if (appModel.workingStatus == ""){
-				this.spinner.stop(document.getElementById('spinnerhere'));
+				//this.spinner.stop(document.getElementById('spinnerhere'));
 			}else{
-				this.spinner.spin(document.getElementById('spinnerhere'));
+				//this.spinner.spin(document.getElementById('spinnerhere'));
 			}
 			}
 
@@ -175,7 +175,7 @@ function iWannaChooseCalendars(event) {
 			
 			appModel.setWorkingStatus("loading...");
 			appModel.setCldrStatus(k,"loading...");
-			askGoogle.loadEvents(k,null);	
+			askGoogle.loadEvents(k,null,null);
 			}
 		}//for
 	
@@ -256,6 +256,19 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
 		this.colorFilterItems.push(colorFilterItem);
 	}
 	
+    this.historyLeftRightDiv = $("<div>")
+		.attr("style","display:inline;");
+
+	this.histLeftLabelSpan = $("<span>")
+		.addClass("historyLabel")
+		.text("<<")
+		.bind("click mouseover mouseout", {view: this, what: "left"}, iWannaHistoryLeftRight); // attach listener
+
+	this.histRightLabelSpan = $("<span>")
+		.addClass("historyLabel")
+		.text(">>")
+		.bind("click mouseover mouseout", {view: this, what: "right"}, iWannaHistoryLeftRight); // attach listener
+
 	
 	this.simpleComplexDiv = $("<div>")
 		.attr("style","display:inline; float:right");
@@ -289,11 +302,13 @@ function ToolbarView(parent /*JQuery object*/, calendarModel) {
  			
  			" Enter numbers, apply by hitting enter. This is an experimental section :) ").hide();
  	
- 	this.simpleComplexDiv.append(this.simpleLabelSpan,this.complexLabelSpan);
+ 	this.historyLeftRightDiv.append(this.histLeftLabelSpan,this.histRightLabelSpan);
 
- 	parent.append(this.barSpan, " " ,this.moreOptionsSpan,this.moreSpan, this.simpleComplexDiv);
+    this.simpleComplexDiv.append(this.simpleLabelSpan,this.complexLabelSpan);
+
+ 	parent.append(this.historyLeftRightDiv, this.barSpan, " " ,this.moreOptionsSpan,this.moreSpan, this.simpleComplexDiv);
  	
- 	parent.attr("style","padding-top:25px; padding-left:50px");
+ 	parent.attr("style","padding-top:25px; padding-left:10px");
 	
  	
 	/***************************************************************************
@@ -350,6 +365,28 @@ function iWannaSimpleComplex(event) {
 		}
 	
 	 
+	}
+
+function iWannaHistoryLeftRight(event) {
+		var l = event.data.view.histLeftLabelSpan;
+		var r = event.data.view.histRightLabelSpan;
+
+	if (event.type == "click") {
+		if (event.data.what=="left"){ appModel.setYearFrame(appModel.yearFirst-1, appModel.yearLast-1);	 }
+		if (event.data.what=="right"){ appModel.setYearFrame(appModel.yearFirst+1, appModel.yearLast+1); }
+		}
+
+	if (event.type == "mouseover") {
+		if (event.data.what=="left"){	l.addClass("historyLabel-active");	}
+		if (event.data.what=="right"){	r.addClass("historyLabel-active");	}
+		}
+
+	if (event.type == "mouseout") {
+		l.removeClass("historyLabel-active");
+		r.removeClass("historyLabel-active");
+		}
+
+
 	}
 
 

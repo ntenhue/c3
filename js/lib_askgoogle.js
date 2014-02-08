@@ -28,7 +28,8 @@ function AskGoogle(calendarModel) {
 	 * if there are more pages to load, function calls itself as a recursive
 	 * 
 	 */	
-	this.loadEvents = function(k, pageToken) {
+	this.loadEvents = function(k, year, pageToken) {
+        if (year == null) year = appModel.yearFirst;
 
 		this.request = gapi.client.calendar.events.list({
 			'calendarId': calendarModel.calendars[k].id, 
@@ -36,10 +37,10 @@ function AskGoogle(calendarModel) {
 			'singleEvents': true,
 			'showDeleted': true,
 			'orderBy': 'startTime',
-			'timeMin': (appModel.yearFirst)+'-01-01T00:00:00+01:00', 
-			'timeMax': (appModel.yearLast+1)+'-01-01T00:00:00+01:00', //+1 because it is exclusive
+			'timeMin': (year)+'-01-01T00:00:00+01:00',
+			'timeMax': (year+1)+'-01-01T00:00:00+01:00', //+1 because it is exclusive
 			'fields': 'items(colorId,start,end,summary,id,location,htmlLink,status),nextPageToken,updated',
-			'updatedMin': (calendarModel.calendars[k].updated==""?null:calendarModel.calendars[k].updated),
+			'updatedMin': (calendarModel.calendars[k].dataAvailable[year]),
 			'pageToken': pageToken
 			});
 		
@@ -47,22 +48,33 @@ function AskGoogle(calendarModel) {
 		this.request.execute(function(resp){
 			console.log(calendarModel.calendars[k].summary, "received events list:", resp); 
 			
-			if (resp.items!=null && resp.items.length>0 && 
-				resp.updated.substring(0,19)!=calendarModel.calendars[k].updated.substring(0,19)){
-				calendarModel.addEvents(k,resp.items,resp.updated,resp.nextPageToken);
+			if (resp.items!=null && resp.items.length>0
+               //if the calendar is already up to date
+               && resp.updated!=calendarModel.calendars[k].dataAvailable[year]
+               ){
+				calendarModel.addEvents(k,resp.items,resp.updated,year,resp.nextPageToken);
 			}else{
 				appModel.setWorkingStatus("");				
 				appModel.setCldrStatus(k,"updated");
 			}
 			
-			if (resp.nextPageToken != null){
-				if (appModel.selectedCldrs[k]) {
-					askGoogle.loadEvents(k,resp.nextPageToken);
-				}else{
-					console.log(calendarModel.calendars[k].summary, "DOWNLOADING CANCELLED"); 
-					calendarModel.clearEvents(k);
-				}
-			}
+            // check if the calendar is still interesting to user
+            if (appModel.selectedCldrs[k]) {
+                if (resp.nextPageToken != null){
+                        askGoogle.loadEvents(k,year,resp.nextPageToken);
+                }else{
+                    if(year < appModel.yearLast){
+                        askGoogle.loadEvents(k,year+1,null);
+                    }else{
+                        calendarModel.prepareData(k);
+                    }
+                }
+            }else{
+                // calendar was unselected while downloading
+                console.log(calendarModel.calendars[k].summary, "DOWNLOADING CANCELLED");
+                calendarModel.clearEvents(k);
+            }
+
 				// if there are more pages to show,
 				// the function calls itself with a nextPageToken
 				// recursion is stopped on the last page, 
